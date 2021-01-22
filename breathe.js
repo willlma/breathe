@@ -1,27 +1,20 @@
+console.log('document.referrer', document.referrer);
 const div = document.createElement('div');
-const background = document.createElement('div');
 div.id = 'gotta-breathe';
-div.style.position = 'absolute';
-background.style.position = 'absolute';
-div.style.width = '100vw';
-background.style.width = '100%';
-div.style.height = '100vh';
-background.style.height = '100%';
-div.style.background = 'rgb(178, 216, 255)';
-// background.style.background = 'rgb(178, 216, 255)';
-background.style.background = '#111';
-div.style.top = 0;
-background.style.top = 0;
-div.style.zIndex = 9999999999999;
-background.style.zIndex = 9999999999998;
-div.style.display = 'flex';
-div.style.flexDirection = 'column';
-div.style.justifyContent = 'center';
-div.style.alignItems = 'center';
 
 const img = document.createElement('img');
 img.src = chrome.runtime.getURL('assets/breathe.gif');
-div.appendChild(img);
+div.append(img);
+
+function onContinue() {
+  button.remove();
+  div.append('Dopamine rush incoming...');
+  setTimeout(() => div.remove(), 10000);
+}
+
+const button = document.createElement('button');
+button.textContent = 'Continue';
+button.addEventListener('click', onContinue);
 
 let intervalId;
 const appendElements = () => {
@@ -29,25 +22,24 @@ const appendElements = () => {
   console.log('body', body);
   if (!body) return;
 
-  body.appendChild(background);
-  body.appendChild(div);
+  body.append(div);
   if (intervalId) clearInterval(intervalId);
 };
 
-document.addEventListener('DOMContentLoaded', appendElements);
+const start = Date.now();
+function onLoad() {
+  const loadTime = Date.now() - start;
+  console.log('loadTime', loadTime);
+  if (loadTime < 800) div.remove();
+  else appendElements();
+}
+
+document.addEventListener('DOMContentLoaded', onLoad);
 intervalId = setInterval(appendElements, 20);
 
-const onContinue = () => setTimeout(() => {
-  background.remove();
-  div.remove();
-}, 10000);
-
-const afterTimeout = () => {
-  const button = document.createElement('button');
-  button.textContent = 'Continue';
-  button.addEventListener('click', onContinue);
-  div.appendChild(button);
-};
+function afterTimeout() {
+  div.append(button);
+}
 
 let timeoutId = setTimeout(afterTimeout, 40000);
 
