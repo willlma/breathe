@@ -4,10 +4,13 @@
   "name": "Breathe",
   "version": "0.3.1",
   "description": "Do breathing exercises instead of wasting time on the web.",
+  "background": {
+    "scripts": ["background.js"]
+  },
   "content_scripts": [
     {
       "matches": ["*://*.reddit.com/*", "*://news.google.com/*"],
-      "js": ["./breathe.js"],
+      "js": ["./services.js", "./breathe.js"],
       "css": ["./breathe.css"],
       "run_at": "document_start"
     }
