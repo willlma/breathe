@@ -1,8 +1,7 @@
 {
-
   "manifest_version": 2,
   "name": "Breathe",
-  "version": "0.3.1",
+  "version": "0.4",
   "description": "Do breathing exercises instead of wasting time on the web.",
   "background": {
     "scripts": ["background.js"]
@@ -10,6 +9,7 @@
   "content_scripts": [
     {
       "matches": ["*://*.reddit.com/*", "*://news.google.com/*"],
+      "exclude_matches": ["*://*.reddit.com/r/*/comments/*"],
       "js": ["./services.js", "./breathe.js"],
       "css": ["./breathe.css"],
       "run_at": "document_start"

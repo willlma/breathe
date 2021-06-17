@@ -17,4 +17,4 @@ runtime.onMessage.addListener(onMessage);
 setTimeout(() => {
   permittedHostname = null;
   permittedTabId = null;
-}, 25 * 3600000);
+}, 5 * 3600000);

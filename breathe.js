@@ -3,6 +3,7 @@ const timeMultiplier = 10; // set to 1 for testing
 
 const div = document.createElement('div');
 div.id = 'gotta-breathe';
+div.append('Focus on something 20 feet away for 20 seconds.');
 
 const img = document.createElement('img');
 img.src = chrome.runtime.getURL('assets/breathe.gif');
@@ -17,7 +18,7 @@ function releaseTheDopamine() {
 function onContinue() {
   button.remove();
   div.append('Dopamine rush incoming...');
-  setTimeout(releaseTheDopamine, 1000 * timeMultiplier);
+  setTimeout(releaseTheDopamine, 200 * timeMultiplier);
 }
 
 const button = document.createElement('button');
@@ -43,10 +44,10 @@ sendMessage({ getHostname: true }).then((hostname) => {
     div.append(button);
   }
 
-  let timeoutId = setTimeout(afterTimeout, 4500 * timeMultiplier);
+  let timeoutId = setTimeout(afterTimeout, 2500 * timeMultiplier);
 
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') clearTimeout(timeoutId);
-    else timeoutId = setTimeout(afterTimeout, 4000 * timeMultiplier);
+    else timeoutId = setTimeout(afterTimeout, 2000 * timeMultiplier);
   });
 });
