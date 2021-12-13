@@ -40,14 +40,32 @@ sendMessage({ getHostname: true }).then((hostname) => {
   document.addEventListener('DOMContentLoaded', appendElements);
   intervalId = setInterval(appendElements, 20);
 
-  function afterTimeout() {
+  function showContinueButton() {
     div.append(button);
   }
 
-  let timeoutId = setTimeout(afterTimeout, 2500 * timeMultiplier);
+  let timeoutId;
+  if (document.hasFocus()) {
+    timeoutId = setTimeout(showContinueButton, 2500 * timeMultiplier);
+    console.log('breathe', timeoutId);
+  }
+
+  // prevent user from checkout out another tab/app while waiting
+  const resetTimeout = () => {
+    timeoutId = setTimeout(showContinueButton, 2000 * timeMultiplier);
+    document.removeEventListener('focus', resetTimeout);
+    console.log('breathe reset', timeoutId);
+  }
+
 
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') clearTimeout(timeoutId);
-    else timeoutId = setTimeout(afterTimeout, 2000 * timeMultiplier);
+    else console.log('breathe visible') || resetTimeout();
+  });
+
+  document.addEventListener('blur', () => {
+    console.log('breathe blur', timeoutId);
+    clearTimeout(timeoutId);
+    document.addEventListener('focus', resetTimeout);
   });
 });

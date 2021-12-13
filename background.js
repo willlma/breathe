@@ -1,5 +1,5 @@
 const { runtime } = chrome;
-const timeMultiplier = 10; // set to 1 for testing
+const timeMultiplier = 10; // set to 1 for dev, keep in sync with breathe.js
 let permittedHostname;
 let permittedTabId;
 let timeoutId;

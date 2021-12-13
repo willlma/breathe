@@ -13,5 +13,5 @@
 
 /* Prevent viewing more than 25 items on old.reddit.com */
 .nextprev {
-  display: none;
+  display: none !important;
 }

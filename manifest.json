@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Breathe",
-  "version": "0.4",
+  "version": "0.5",
   "description": "Do breathing exercises instead of wasting time on the web.",
   "background": {
     "scripts": ["background.js"]
