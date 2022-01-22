@@ -1,19 +1,22 @@
 {
-  "manifest_version": 2,
-  "name": "Breathe",
-  "version": "0.5",
-  "description": "Do breathing exercises instead of wasting time on the web.",
-  "background": {
-    "scripts": ["background.js"]
-  },
+  "background": { "scripts": ["browser-polyfill.js", "background.js"] },
   "content_scripts": [
     {
-      "matches": ["*://*.reddit.com/*", "*://news.google.com/*"],
-      "exclude_matches": ["*://*.reddit.com/r/*/comments/*"],
-      "js": ["./services.js", "./breathe.js"],
+      "matches": ["*://*/*"],
+      "js": ["./browser-polyfill.js", "./breathe.js"],
       "css": ["./breathe.css"],
       "run_at": "document_start"
     }
   ],
+  "description": "Do breathing exercises and improve eyesight instead of wasting time on the web.",
+  "icons": {
+    "48": "breathe48.png",
+    "128": "breathe128.png"
+  },
+  "manifest_version": 2,
+  "name": "Breathe",
+  "options_ui": { "page": "settings/index.html" },
+  "permissions": ["storage", "tabs"],
+  "version": "0.6",
   "web_accessible_resources": ["assets/breathe.gif"]
 }

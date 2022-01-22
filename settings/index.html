@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <style>
+      label, button {
+        display: block;
+        margin-bottom: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <form>
+      <p>One URL per line. Use * to represent any letters (or numbers).</p>
+      <label>
+        <div>Procrastination destinations:</div>
+        <textarea rows="5" cols="40" type="text" name="blacklist">reddit.com</textarea>
+      </label>
+      <label>
+        <div>Exceptions:</div>
+        <textarea rows="5" cols="40" type="text" name="whitelist">reddit.com/r/*/comments</textarea>
+      </label>
+      <button type="submit">Save</button>
+    </form>
+
+    <script type="application/javascript" src="../browser-polyfill.js"></script>
+    <script type="application/javascript" src="index.js"></script>
+  </body>
+</html>
