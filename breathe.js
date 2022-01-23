@@ -13,7 +13,7 @@ function breathe() {
   function releaseTheDopamine() {
     runtime.sendMessage({ hostname: location.hostname }).then(
       () => div.remove(),
-      () => console.log('failed to temporarily whitelist hostname')
+      err => console.error(`Failed to temporarily whitelist hostname: ${err}`)
     );
   }
 
@@ -37,8 +37,6 @@ function breathe() {
   };
 
   runtime.sendMessage({ getHostname: true }).then((hostname) => {
-    console.log({ hostname });
-    console.log('location.hostname', location.hostname);
     if (hostname === location.hostname) return;
 
     document.addEventListener('DOMContentLoaded', appendElements);
@@ -51,36 +49,30 @@ function breathe() {
     let timeoutId;
     if (document.hasFocus()) {
       timeoutId = setTimeout(showContinueButton, 3500 * timeMultiplier);
-      console.log('breathe', timeoutId);
     }
 
     // prevent user from checkout out another tab/app while waiting
     const resetTimeout = () => {
       timeoutId = setTimeout(showContinueButton, 3000 * timeMultiplier);
       document.removeEventListener('focus', resetTimeout);
-      console.log('breathe reset', timeoutId);
     }
 
 
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'hidden') clearTimeout(timeoutId);
-      else console.log('breathe visible') || resetTimeout();
+      else resetTimeout();
     });
 
     document.addEventListener('blur', () => {
-      console.log('breathe blur', timeoutId);
       clearTimeout(timeoutId);
       document.addEventListener('focus', resetTimeout);
     });
   });
 };
 
-const listHasMatch = (list) => list.split('\n').find(site => {
-  const regex = new RegExp(site.replace(/\*/g, '\\w+'));
-  const match = location.href.match(regex);
-  console.log({ regex, match });
-  return match;
-});
+const listHasMatch = (list) => list?.split('\n').find(
+  site => location.href.match(new RegExp(site.replace(/\*/g, '\\w+')))
+);
 
 storage.sync.get(['blacklist', 'whitelist']).then(({ blacklist, whitelist }) => {
   console.log({ blacklist, whitelist });
