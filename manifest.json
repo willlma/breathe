@@ -24,7 +24,7 @@
   "name": "Breathe",
   "options_ui": { "page": "settings/index.html" },
   "permissions": ["storage", "alarms"],
-  "version": "0.6",
+  "version": "0.7",
   "web_accessible_resources": [
     "assets/breathe.gif"
   ]
