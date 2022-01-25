@@ -1,6 +1,7 @@
 {
   "background": {
-    "scripts": ["browser-polyfill.js", "background.js"]
+    "service_worker": "background.js",
+    "type": "module"
   },
   "browser_specific_settings": {
     "gecko": { "id": "{29fee87a-f43c-44a6-9d0d-bcb6d65cc77f}" }
@@ -18,12 +19,12 @@
     "48": "assets/breathe48.png",
     "128": "assets/breathe128.png"
   },
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "Breathe",
   "options_ui": { "page": "settings/index.html" },
   "permissions": ["storage", "alarms"],
   "version": "0.7",
   "web_accessible_resources": [
-    "assets/breathe.gif"
+    { "resources": ["assets/breathe.gif"], "matches": ["*://*/*"] }
   ]
 }
