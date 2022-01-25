@@ -1,5 +1,5 @@
 const { runtime, storage } = browser;
-const timeMultiplier = 1; // set to 1 for testing
+const timeMultiplier = 10; // set to 1 for testing
 
 function breathe() {
   const div = document.createElement('div');

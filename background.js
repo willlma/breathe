@@ -1,6 +1,6 @@
 const main = () => {
   const { alarms, runtime, storage } = browser;
-  const timeMultiplier = 1; // set to 1 for dev, keep in sync with breathe.js
+  const timeMultiplier = 10; // set to 1 for dev, keep in sync with breathe.js
 
   const resetPermissions = () => storage.local.set({
     permittedHostname: null,
