@@ -1,5 +1,5 @@
 const { runtime, storage } = browser;
-const timeMultiplier = 10; // set to 1 for testing
+const timeMultiplier = 1; // set to 1 for testing
 
 function breathe() {
   const div = document.createElement('div');
@@ -75,7 +75,5 @@ const listHasMatch = (list) => list?.split('\n').find(
 );
 
 storage.sync.get(['blacklist', 'whitelist']).then(({ blacklist, whitelist }) => {
-  console.log({ blacklist, whitelist });
-
   if (listHasMatch(blacklist) && !listHasMatch(whitelist)) breathe();
 });

@@ -10,8 +10,3 @@
   justify-content: center;
   align-items: center;
 }
-
-/* Prevent viewing more than 25 items on old.reddit.com */
-.nextprev {
-  display: none !important;
-}
