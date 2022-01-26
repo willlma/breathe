@@ -3,9 +3,7 @@
     "scripts": ["browser-polyfill.js", "background.js"]
   },
   "browser_specific_settings": {
-    "gecko": {
-      "id": "breathe@dont.scroll"
-    }
+    "gecko": { "id": "{29fee87a-f43c-44a6-9d0d-bcb6d65cc77f}" }
   },
   "content_scripts": [
     {

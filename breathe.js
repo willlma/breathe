@@ -71,7 +71,9 @@ function breathe() {
 };
 
 const listHasMatch = (list) => list?.split('\n').find(
-  site => location.href.match(new RegExp(site.replace(/\*/g, '\\w+')))
+  site => location.href.match(
+    new RegExp(site.replace(/[-\\^$+?.()|[\]{}]/g, '\\$&').replace(/\*/g, '\\w+'))
+  )
 );
 
 storage.sync.get(['blacklist', 'whitelist']).then(({ blacklist, whitelist }) => {
