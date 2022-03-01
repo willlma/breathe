@@ -10,16 +10,18 @@ function breathe() {
   img.src = runtime.getURL('assets/breathe.gif');
   div.append(img);
 
+  const footer = document.createElement('div');
+  div.append(footer);
+
   function releaseTheDopamine() {
     runtime.sendMessage({ hostname: location.hostname }).then(
       () => div.remove(),
-      err => console.error(`Failed to temporarily whitelist hostname: ${err}`)
+      (err) => console.error(`Failed to temporarily whitelist hostname: ${err}`)
     );
   }
 
   function onContinue() {
-    button.remove();
-    div.append('Dopamine rush incoming...');
+    footer.replaceChildren('Dopamine rush incoming...');
     setTimeout(releaseTheDopamine, 200 * timeMultiplier);
   }
 
@@ -43,38 +45,44 @@ function breathe() {
     intervalId = setInterval(appendElements, 20);
 
     function showContinueButton() {
-      div.append(button);
+      footer.replaceChildren(button);
     }
 
     let timeoutId;
     if (document.hasFocus()) {
-      timeoutId = setTimeout(showContinueButton, 3500 * timeMultiplier);
-    }
-
-    // prevent user from checkout out another tab/app while waiting
-    const resetTimeout = () => {
       timeoutId = setTimeout(showContinueButton, 3000 * timeMultiplier);
-      document.removeEventListener('focus', resetTimeout);
     }
 
+    // prevent user from checking out another tab/app while waiting
+    const resetTimeout = () => {
+      timeoutId = setTimeout(showContinueButton, 2500 * timeMultiplier);
+      footer.replaceChildren('Welcome back 😉\nRestarting countdown');
+      document.removeEventListener('focus', resetTimeout);
+    };
 
+    // TODO: Switching apps from Chrome not resetting counter
     document.addEventListener('visibilitychange', () => {
+      // console.log('visibility change');
       if (document.visibilityState === 'hidden') clearTimeout(timeoutId);
       else resetTimeout();
     });
 
     document.addEventListener('blur', () => {
+      // console.log('blur');
       clearTimeout(timeoutId);
       document.addEventListener('focus', resetTimeout);
     });
   });
-};
+}
 
-const listHasMatch = (list) => list?.split('\n').find(
-  site => location.href.match(
-    new RegExp(site.replace(/[-\\^$+?.()|[\]{}]/g, '\\$&').replace(/\*/g, '\\w+'))
-  )
-);
+const listHasMatch = (list) =>
+  list
+    ?.split('\n')
+    .find((site) =>
+      location.href.match(
+        new RegExp(site.replace(/[-\\^$+?.()|[\]{}]/g, '\\$&').replace(/\*/g, '\\w+'))
+      )
+    );
 
 storage.sync.get(['blacklist', 'whitelist']).then(({ blacklist, whitelist }) => {
   if (listHasMatch(blacklist) && !listHasMatch(whitelist)) breathe();
