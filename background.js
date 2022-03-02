@@ -1,5 +1,3 @@
-import './browser-polyfill.js';
-
 const { alarms, runtime, storage } = browser;
 const timeMultiplier = 10; // set to 1 for dev, keep in sync with breathe.js
 
