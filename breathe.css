@@ -27,6 +27,7 @@
 #gotta-breathe > #headspace-gif-container {
   flex: 3;
   overflow: hidden;
+  justify-content: flex-end;
 }
 
 #headspace-gif-container img {
