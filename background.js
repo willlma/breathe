@@ -1,5 +1,6 @@
 const { alarms, runtime, storage } = browser;
 const timeMultiplier = 10; // set to 1 for dev, keep in sync with breathe.js
+let duration;
 
 const resetPermissions = () =>
   storage.local.set({
@@ -17,14 +18,16 @@ function setPermittedFlags(hostname, tabId) {
 
   alarms.get('reset-alarm').then((alarm) => {
     if (!alarm) {
-      alarms.create('reset-alarm', { delayInMinutes: 1 * timeMultiplier });
+      alarms.create('reset-alarm', { delayInMinutes: (duration / 10) * timeMultiplier });
       alarms.onAlarm.addListener(resetPermissions);
     }
   });
 }
 
-runtime.onMessage.addListener(({ hostname, getHostname }, { tab }) => {
-  if (hostname) {
+runtime.onMessage.addListener(({ duration: inputDuration, hostname, getHostname }, { tab }) => {
+  if (inputDuration) {
+    duration = inputDuration;
+  } else if (hostname) {
     setPermittedFlags(hostname, tab.id);
   } else if (getHostname) {
     // using separate if condition to allow for expanding possible messages

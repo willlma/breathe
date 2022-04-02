@@ -1,12 +1,34 @@
 #gotta-breathe {
-  top: 0;
+  align-items: center;
   background: rgb(178, 216, 255);
-  position: fixed;
-  z-index: 9999999999999;
-  width: 100vw;
-  height: 100vh;
   display: flex;
   flex-direction: column;
+  height: 100vh;
   justify-content: center;
+  position: fixed;
+  top: 0;
+  width: 100vw;
+  z-index: 9999999999999;
+  /* font: normal medium sans-serif; */
+}
+
+#gotta-breathe > div {
+  flex: 1;
+  display: flex;
+  justify-content: space-around;
   align-items: center;
+  flex-direction: column;
+}
+
+#gotta-breathe label {
+  margin-right: 8px;
+}
+
+#gotta-breathe > #headspace-gif-container {
+  flex: 3;
+  overflow: hidden;
+}
+
+#headspace-gif-container img {
+  height: 100%;
 }

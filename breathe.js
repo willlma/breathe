@@ -1,53 +1,39 @@
 const { runtime, storage } = browser;
 const timeMultiplier = 10; // set to 1 for testing
 
-function breathe() {
+function breathe(html) {
   const div = document.createElement('div');
   div.id = 'gotta-breathe';
-  div.append('Focus on something 20 feet away for 20 seconds.');
+  div.innerHTML = html;
+  const form = div.querySelector('form');
+  const footer = div.querySelector('#breathe-footer');
+  const button = footer.querySelector('button');
+  div.querySelector('img').src = runtime.getURL('/assets/breathe.gif');
 
-  const img = document.createElement('img');
-  img.src = runtime.getURL('assets/breathe.gif');
-  div.append(img);
-
-  const footer = document.createElement('div');
-  div.append(footer);
-
-  function releaseTheDopamine() {
-    runtime.sendMessage({ hostname: location.hostname }).then(
-      () => div.remove(),
-      (err) => console.error(`Failed to temporarily whitelist hostname: ${err}`)
-    );
-  }
-
-  function onContinue() {
+  button.addEventListener('click', () => {
     footer.replaceChildren('Dopamine rush incoming...');
-    setTimeout(releaseTheDopamine, 200 * timeMultiplier);
+    setTimeout(() => {
+      runtime.sendMessage({ hostname: location.hostname }).then(
+        () => div.remove(),
+        (err) => console.error(`Failed to temporarily whitelist hostname: ${err}`)
+      );
+    }, 200 * timeMultiplier);
+  });
+  function showContinueButton() {
+    button.style.removeProperty('display');
+    footer.replaceChildren(button);
   }
 
-  const button = document.createElement('button');
-  button.textContent = 'Continue';
-  button.addEventListener('click', onContinue);
+  form.addEventListener('submit', (evt) => {
+    evt.preventDefault();
 
-  let intervalId;
-  const appendElements = () => {
-    const { body } = document;
-    if (!body) return;
-
-    body.append(div);
-    if (intervalId) clearInterval(intervalId);
-  };
-
-  runtime.sendMessage({ getHostname: true }).then((hostname) => {
-    if (hostname === location.hostname) return;
-
-    document.addEventListener('DOMContentLoaded', appendElements);
-    intervalId = setInterval(appendElements, 20);
-
-    function showContinueButton() {
-      footer.replaceChildren(button);
-    }
-
+    runtime.sendMessage({ duration: parseInt(form.querySelector('input').value) });
+    console.log(
+      'div.querySelector(#breathe-focus-message).style',
+      div.querySelector('#breathe-focus-message').style
+    );
+    div.querySelector('#breathe-focus-message').style.removeProperty('visibility');
+    form.querySelector('button').textContent = 'Update';
     let timeoutId;
     if (document.hasFocus()) {
       timeoutId = setTimeout(showContinueButton, 3000 * timeMultiplier);
@@ -73,6 +59,16 @@ function breathe() {
       document.addEventListener('focus', resetTimeout);
     });
   });
+
+  function appendElements() {
+    const { body } = document;
+    if (!body) return;
+
+    body.append(div);
+    if (intervalId) clearInterval(intervalId);
+  }
+  document.addEventListener('DOMContentLoaded', appendElements);
+  intervalId = setInterval(appendElements, 20);
 }
 
 const listHasMatch = (list) =>
@@ -85,5 +81,13 @@ const listHasMatch = (list) =>
     );
 
 storage.sync.get(['blacklist', 'whitelist']).then(({ blacklist, whitelist }) => {
-  if (listHasMatch(blacklist) && !listHasMatch(whitelist)) breathe();
+  if (listHasMatch(blacklist) && !listHasMatch(whitelist)) {
+    runtime.sendMessage({ getHostname: true }).then((hostname) => {
+      if (hostname === location.hostname) return;
+
+      fetch(runtime.getURL('/breathe.html'))
+        .then((res) => res.text())
+        .then(breathe);
+    });
+  }
 });

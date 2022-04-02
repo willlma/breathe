@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "build": "npx web-ext build"
+  },
   "devDependencies": {
     "web-ext": "^6.6.0",
     "webextension-polyfill": "^0.8.0"
