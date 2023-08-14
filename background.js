@@ -1,40 +1,62 @@
 const { alarms, runtime, storage } = browser;
-const timeMultiplier = 10; // set to 1 for dev, keep in sync with breathe.js
-let duration;
+// fake import. Replace with import { timeMultiplier } from './constants' when modules are set up
+const { timeMultiplier } = constants;
 
 const resetPermissions = () =>
-  storage.local.set({
+  storage.session.set({
     permittedHostname: null,
     permittedTabId: null,
   });
 
-resetPermissions();
-
-function setPermittedFlags(hostname, tabId) {
-  storage.local.set({
+const setPermittedFlags = (hostname, tabId) => {
+  storage.session.set({
     permittedHostname: hostname,
     permittedTabId: tabId,
   });
 
-  alarms.get('reset-alarm').then((alarm) => {
-    if (!alarm) {
-      alarms.create('reset-alarm', { delayInMinutes: (duration / 10) * timeMultiplier });
-      alarms.onAlarm.addListener(resetPermissions);
-    }
-  });
-}
+  return Promise.all([alarms.get('reset-alarm'), storage.session.get('duration')]).then(
+    ([alarm, { duration }]) => {
+      // if there's already another procrastinating tab open. Don't extend it.
+      if (!alarm) {
+        alarms.create('reset-alarm', { delayInMinutes: duration * timeMultiplier });
+        alarms.onAlarm.addListener(resetPermissions);
+      }
 
-runtime.onMessage.addListener(({ duration: inputDuration, hostname, getHostname }, { tab }) => {
-  if (inputDuration) {
-    duration = inputDuration;
+      return duration;
+    }
+  );
+};
+
+const shouldSkipWait = (duration) => {
+  const date = new Date();
+
+  // only skip the wait if you'll procrastinate less than 5 minutes (and not after midnight)
+  if (duration > 5 || date.getHours() < 7) return false;
+
+  return storage.local.get('lastSkippedDay').then(({ lastSkippedDay }) => {
+    const day = date.getDay();
+    if (lastSkippedDay && lastSkippedDay === day) return false;
+
+    storage.local.set({ lastSkippedDay: day });
+    return true;
+  });
+};
+
+runtime.onMessage.addListener(({ duration, hostname, getHostname }, { tab }) => {
+  if (duration) {
+    storage.session.set({ duration });
+    // skip the wait one time if the duration is under 5 mins
+    return shouldSkipWait(duration);
   } else if (hostname) {
-    setPermittedFlags(hostname, tab.id);
+    return setPermittedFlags(hostname, tab.id);
   } else if (getHostname) {
     // using separate if condition to allow for expanding possible messages
-    return storage.local
+    return storage.session
       .get(['permittedHostname', 'permittedTabId'])
       .then(
         ({ permittedHostname, permittedTabId }) => tab.id === permittedTabId && permittedHostname
       );
   }
 });
+
+storage.local.set({ lastSkippedDay: null });

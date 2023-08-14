@@ -1,74 +1,83 @@
 const { runtime, storage } = browser;
-const timeMultiplier = 10; // set to 1 for testing
+// fake import. Replace with import { timeMultiplier } from './constants' when modules are set up
+const { timeMultiplier } = constants;
 
-function breathe(html) {
-  const div = document.createElement('div');
-  div.id = 'gotta-breathe';
-  div.innerHTML = html;
-  const form = div.querySelector('form');
-  const footer = div.querySelector('#breathe-footer');
-  const button = footer.querySelector('button');
-  div.querySelector('img').src = runtime.getURL('/assets/breathe.gif');
+function breathe() {
+  fetch(runtime.getURL('/breathe.html'))
+    .then((res) => res.text())
+    .then((html) => {
+      const div = document.createElement('div');
+      div.id = 'gotta-breathe';
+      div.innerHTML = html;
+      const form = div.querySelector('form');
+      const footer = div.querySelector('#breathe-footer');
+      const continueButton = footer.querySelector('button');
+      div.querySelector('img').src = runtime.getURL('/assets/breathe.gif');
 
-  button.addEventListener('click', () => {
-    footer.replaceChildren('Dopamine rush incoming...');
-    setTimeout(() => {
-      runtime.sendMessage({ hostname: location.hostname }).then(
-        () => div.remove(),
-        (err) => console.error(`Failed to temporarily whitelist hostname: ${err}`)
-      );
-    }, 200 * timeMultiplier);
-  });
-  function showContinueButton() {
-    button.style.removeProperty('display');
-    footer.replaceChildren(button);
-  }
+      continueButton.addEventListener('click', () => {
+        footer.replaceChildren('Dopamine rush incoming...');
+        setTimeout(() => {
+          runtime.sendMessage({ hostname: location.hostname }).then(
+            (duration) => {
+              div.remove();
+              // starts everything over after the set duration, since the background script only triggers on pageload
+              const msInMin = 6e4;
+              setTimeout(breathe, duration * msInMin * timeMultiplier);
+            },
+            (err) => console.error(`Failed to temporarily whitelist hostname: ${err}`)
+          );
+        }, 2000 * timeMultiplier);
+      });
 
-  form.addEventListener('submit', (evt) => {
-    evt.preventDefault();
+      function showContinueButton() {
+        continueButton.style.removeProperty('display');
+        footer.replaceChildren(continueButton);
+      }
 
-    runtime.sendMessage({ duration: parseInt(form.querySelector('input').value) });
-    console.log(
-      'div.querySelector(#breathe-focus-message).style',
-      div.querySelector('#breathe-focus-message').style
-    );
-    div.querySelector('#breathe-focus-message').style.removeProperty('visibility');
-    form.querySelector('button').textContent = 'Update';
-    let timeoutId;
-    if (document.hasFocus()) {
-      timeoutId = setTimeout(showContinueButton, 3000 * timeMultiplier);
-    }
+      form.addEventListener('submit', (evt) => {
+        evt.preventDefault();
 
-    // prevent user from checking out another tab/app while waiting
-    const resetTimeout = () => {
-      timeoutId = setTimeout(showContinueButton, 2500 * timeMultiplier);
-      footer.replaceChildren('Welcome back 😉\nRestarting countdown');
-      document.removeEventListener('focus', resetTimeout);
-    };
+        let timeoutId;
+        runtime
+          .sendMessage({ duration: parseInt(form.querySelector('input').value) })
+          .then((shouldSkipWait) => {
+            if (document.hasFocus()) {
+              const timeout = shouldSkipWait ? 0 : 25000;
+              timeoutId = setTimeout(showContinueButton, timeout * timeMultiplier);
+            }
+          });
+        div.querySelector('#breathe-focus-message').style.removeProperty('visibility');
+        form.querySelector('button').textContent = 'Update';
 
-    // TODO: Switching apps from Chrome not resetting counter
-    document.addEventListener('visibilitychange', () => {
-      // console.log('visibility change');
-      if (document.visibilityState === 'hidden') clearTimeout(timeoutId);
-      else resetTimeout();
+        // prevent user from checking out another tab/app while waiting
+        const resetTimeout = () => {
+          timeoutId = setTimeout(showContinueButton, 20000 * timeMultiplier);
+          footer.replaceChildren('Welcome back 😉\nRestarting countdown');
+          document.removeEventListener('focus', resetTimeout);
+        };
+
+        // TODO: Switching apps from Chrome not resetting counter
+        document.addEventListener('visibilitychange', () => {
+          if (document.visibilityState === 'hidden') clearTimeout(timeoutId);
+          else resetTimeout();
+        });
+
+        document.addEventListener('blur', () => {
+          clearTimeout(timeoutId);
+          document.addEventListener('focus', resetTimeout);
+        });
+      });
+
+      function appendElements() {
+        const { body } = document;
+        if (!body) return;
+
+        body.append(div);
+        if (intervalId) clearInterval(intervalId);
+      }
+      document.addEventListener('DOMContentLoaded', appendElements);
+      intervalId = setInterval(appendElements, 20);
     });
-
-    document.addEventListener('blur', () => {
-      // console.log('blur');
-      clearTimeout(timeoutId);
-      document.addEventListener('focus', resetTimeout);
-    });
-  });
-
-  function appendElements() {
-    const { body } = document;
-    if (!body) return;
-
-    body.append(div);
-    if (intervalId) clearInterval(intervalId);
-  }
-  document.addEventListener('DOMContentLoaded', appendElements);
-  intervalId = setInterval(appendElements, 20);
 }
 
 const listHasMatch = (list) =>
@@ -80,14 +89,13 @@ const listHasMatch = (list) =>
       )
     );
 
-storage.sync.get(['blacklist', 'whitelist']).then(({ blacklist, whitelist }) => {
-  if (listHasMatch(blacklist) && !listHasMatch(whitelist)) {
-    runtime.sendMessage({ getHostname: true }).then((hostname) => {
-      if (hostname === location.hostname) return;
-
-      fetch(runtime.getURL('/breathe.html'))
-        .then((res) => res.text())
-        .then(breathe);
-    });
-  }
-});
+storage.sync.get(['blacklist', 'whitelist']).then(
+  ({ blacklist, whitelist }) => {
+    if (listHasMatch(blacklist) && !listHasMatch(whitelist)) {
+      runtime.sendMessage({ getHostname: true }).then((hostname) => {
+        if (hostname !== location.hostname) breathe();
+      });
+    }
+  },
+  () => console.error('failed to get sync storage')
+);
