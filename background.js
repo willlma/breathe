@@ -4,18 +4,19 @@ const { timeMultiplier } = constants;
 
 const resetPermissions = () =>
   storage.session.set({
-    permittedHostname: null,
+    permittedDomain: null,
     permittedTabId: null,
   });
 
-const setPermittedFlags = (hostname, tabId) => {
+const setPermittedFlags = (domain, tabId) => {
+  console.log('domain', domain);
   storage.session.set({
-    permittedHostname: hostname,
+    permittedDomain: domain,
     permittedTabId: tabId,
   });
 
   return Promise.all([alarms.get('reset-alarm'), storage.session.get('duration')]).then(
-    ([alarm, { duration }]) => {
+    ([alarm, { duration = 25 }]) => {
       // if there's already another procrastinating tab open. Don't extend it.
       if (!alarm) {
         alarms.create('reset-alarm', { delayInMinutes: duration * timeMultiplier });
@@ -42,20 +43,18 @@ const shouldSkipWait = (duration) => {
   });
 };
 
-runtime.onMessage.addListener(({ duration, hostname, getHostname }, { tab }) => {
+runtime.onMessage.addListener(({ duration, domain, getDomain }, { tab }) => {
   if (duration) {
     storage.session.set({ duration });
     // skip the wait one time if the duration is under 5 mins
     return shouldSkipWait(duration);
-  } else if (hostname) {
-    return setPermittedFlags(hostname, tab.id);
-  } else if (getHostname) {
+  } else if (domain) {
+    return setPermittedFlags(domain, tab.id);
+  } else if (getDomain) {
     // using separate if condition to allow for expanding possible messages
     return storage.session
-      .get(['permittedHostname', 'permittedTabId'])
-      .then(
-        ({ permittedHostname, permittedTabId }) => tab.id === permittedTabId && permittedHostname
-      );
+      .get(['permittedDomain', 'permittedTabId'])
+      .then(({ permittedDomain, permittedTabId }) => tab.id === permittedTabId && permittedDomain);
   }
 });
 

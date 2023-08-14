@@ -34,7 +34,7 @@ Add websites you'd rather not waste your time on to `manifest.json`'s `matches` 
 Head to constants.js and change the `timeMultiplier` to 0.1 to speed everything up.
 
 1. Head to reddit.com to make sure the overlay shows up
-2. When you click continue
+2. If it's your cheat day, you should still see the splash screen every 25 minutes or every new site
 
 ## Notes
 
