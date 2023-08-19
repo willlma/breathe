@@ -1,6 +1,8 @@
 {
   "scripts": {
-    "build": "npx web-ext build"
+    "build": "npx web-ext build",
+    "test:debug": "playwright test --debug",
+    "test": "playwright test"
   },
   "devDependencies": {
     "@playwright/test": "^1.37.1",
