@@ -1,6 +1,6 @@
 const { alarms, runtime, storage } = browser;
-// fake import. Replace with import { timeMultiplier } from './constants' when modules are set up
-const { timeMultiplier } = constants;
+// don't try to make shared files with constants in it, Chrome and Firefox do imports differently and it's a pain
+const timeMultiplier = 1; // set to 0.1 for dev, keep in sync with breathe.js
 
 const resetPermissions = () =>
   storage.session.set({
@@ -9,7 +9,6 @@ const resetPermissions = () =>
   });
 
 const setPermittedFlags = (domain, tabId) => {
-  console.log('domain', domain);
   storage.session.set({
     permittedDomain: domain,
     permittedTabId: tabId,
@@ -59,3 +58,8 @@ runtime.onMessage.addListener(({ duration, domain, getDomain }, { tab }) => {
 });
 
 storage.local.set({ lastSkippedDay: null });
+storage.sync.set({
+  // keep these values in sync with settings/index.html
+  blacklist: 'reddit.com',
+  whitelist: 'reddit.com/r/*/comments',
+});

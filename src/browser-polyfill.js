@@ -1,1 +1,1 @@
-node_modules/webextension-polyfill/dist/browser-polyfill.js
+/Users/willlma/projects/breathe/node_modules/webextension-polyfill/dist/browser-polyfill.js

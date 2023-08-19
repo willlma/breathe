@@ -1,10 +1,10 @@
 const { runtime, storage } = browser;
-// fake import. Replace with import { timeMultiplier } from './constants' when modules are set up
-const { timeMultiplier } = constants;
+// don't try to make shared files with constants in it, Chrome and Firefox do imports differently and it's a pain
+const timeMultiplier = 1; // set to 0.1 for dev, keep in sync with background.js
 const messageTimeout = 2000;
 
 const load = (fileName) =>
-  fetch(runtime.getURL(fileName))
+  fetch(runtime.getURL(`/src/${fileName}`))
     .then((res) => res.text())
     .then((html) => {
       const div = document.createElement('div');
@@ -32,12 +32,11 @@ const sendDomain = () =>
     .catch((err) => console.error(`Failed to temporarily whitelist domain: ${err}`));
 
 const breathe = () =>
-  load('/breathe.html').then((div) => {
-    console.log('breathe');
+  load('breathe.html').then((div) => {
     const form = div.querySelector('form');
     const footer = div.querySelector('#breathe-footer');
     const continueButton = footer.querySelector('button');
-    div.querySelector('img').src = runtime.getURL('/assets/breathe.gif');
+    div.querySelector('img').src = runtime.getURL('/src/assets/breathe.gif');
 
     continueButton.addEventListener('click', () => {
       footer.replaceChildren('Dopamine rush incoming...');
@@ -96,7 +95,7 @@ const breathe = () =>
   });
 
 const cheat = () =>
-  load('/cheat-day.html').then((div) => {
+  load('cheat-day.html').then((div) => {
     sendDomain();
     setTimeout(() => div.remove(), messageTimeout * timeMultiplier);
     return div;
@@ -128,14 +127,14 @@ const listHasMatch = (list) =>
 
 storage.sync.get(['blacklist', 'whitelist', 'cheatDay']).then(
   ({ blacklist, whitelist, cheatDay }) => {
+    console.log('blacklist', blacklist);
+    console.log('whitelist', whitelist);
     if (listHasMatch(blacklist) && !listHasMatch(whitelist)) {
       runtime.sendMessage({ getDomain: true }).then((domain) => {
         console.log('domain', domain);
-        console.log('getDomain()', getDomain());
         if (domain === getDomain()) return;
-        console.log('cheatDay', cheatDay);
-        console.log('new Date.getDay()', new Date().getDay());
-        (cheatDay === new Date().getDay() ? cheat : breathe)().then(renderElement);
+        // Comparing a string with a number
+        (cheatDay == new Date().getDay() ? cheat : breathe)().then(renderElement);
       });
     }
   },
