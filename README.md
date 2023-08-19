@@ -8,7 +8,11 @@ Clone this repo, then follow instructions on how to load local extensions on [Ch
 
 ## Development
 
-Run `npm install` to load `browser-polyfill`. The files are just symlinks to the node-modules dist folder.
+Run `npm install` to load `browser-polyfill`. `src/browser-polyfill.js` is just symlinks to the node-modules dist folder. If you need to recreate these symlinks, use absolute paths, ie
+
+```
+ln -sf ~/projects/breathe/node_modules/webextension-polyfill/dist/browser-polyfill.js ~/projects/breathe/src/browser-polyfill.js
+```
 
 There are three main branches:
 
