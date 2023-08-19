@@ -3,7 +3,11 @@
     "build": "npx web-ext build"
   },
   "devDependencies": {
+    "@playwright/test": "^1.37.1",
     "web-ext": "^7.6.2",
     "webextension-polyfill": "^0.10.0"
+  },
+  "dependencies": {
+    "playwright": "^1.37.1"
   }
 }
