@@ -31,6 +31,21 @@ const sendDomain = () =>
     .sendMessage({ domain: getDomain() })
     .catch((err) => console.error(`Failed to temporarily whitelist domain: ${err}`));
 
+const renderElement = (div) => {
+  let intervalId;
+
+  function appendElements() {
+    const { body } = document;
+    if (!body) return;
+
+    body.append(div);
+    if (intervalId) clearInterval(intervalId);
+  }
+
+  document.addEventListener('DOMContentLoaded', appendElements);
+  intervalId = setInterval(appendElements, 20);
+};
+
 const breathe = () =>
   load('breathe.html').then((div) => {
     const form = div.querySelector('form');
@@ -39,17 +54,9 @@ const breathe = () =>
     div.querySelector('img').src = runtime.getURL('/src/assets/breathe.gif');
 
     continueButton.addEventListener('click', () => {
+      // console.log('on continue click');
       footer.replaceChildren('Dopamine rush incoming...');
-      setTimeout(
-        () =>
-          sendDomain().then((duration) => {
-            div.remove();
-            // starts everything over after the set duration, since the background script only triggers on pageload
-            const msInMin = 6e4;
-            setTimeout(breathe, duration * msInMin * timeMultiplier);
-          }),
-        messageTimeout * timeMultiplier
-      );
+      setTimeout(() => sendDomain().then(() => div.remove()), messageTimeout * timeMultiplier);
     });
 
     function showContinueButton() {
@@ -101,21 +108,6 @@ const cheat = () =>
     return div;
   });
 
-const renderElement = (div) => {
-  let intervalId;
-
-  function appendElements() {
-    const { body } = document;
-    if (!body) return;
-
-    body.append(div);
-    if (intervalId) clearInterval(intervalId);
-  }
-
-  document.addEventListener('DOMContentLoaded', appendElements);
-  intervalId = setInterval(appendElements, 20);
-};
-
 const listHasMatch = (list) =>
   list
     ?.split('\n')
@@ -125,18 +117,19 @@ const listHasMatch = (list) =>
       )
     );
 
-storage.sync.get(['blacklist', 'whitelist', 'cheatDay']).then(
-  ({ blacklist, whitelist, cheatDay }) => {
-    console.log('blacklist', blacklist);
-    console.log('whitelist', whitelist);
-    if (listHasMatch(blacklist) && !listHasMatch(whitelist)) {
-      runtime.sendMessage({ getDomain: true }).then((domain) => {
-        console.log('domain', domain);
-        if (domain === getDomain()) return;
-        // Comparing a string with a number
-        (cheatDay == new Date().getDay() ? cheat : breathe)().then(renderElement);
-      });
-    }
-  },
-  () => console.error('failed to get sync storage')
-);
+const main = () => {
+  storage.sync.get(['blacklist', 'whitelist', 'cheatDay']).then(
+    ({ blacklist, whitelist, cheatDay }) => {
+      if (listHasMatch(blacklist) && !listHasMatch(whitelist)) {
+        runtime.sendMessage({ getDomain: true }).then((domain) => {
+          if (domain === getDomain()) return;
+          (parseInt(cheatDay) === new Date().getDay() ? cheat : breathe)().then(renderElement);
+        });
+      }
+    },
+    () => console.error('failed to get sync storage')
+  );
+};
+
+window.addEventListener('popstate', main);
+main();

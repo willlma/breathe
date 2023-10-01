@@ -2,6 +2,10 @@
 
 A web extension to delay loading of certain distracting websites
 
+## Out of scope
+
+CSS changes to websites. Use Stylus instead.
+
 ## Installation
 
 Clone this repo, then follow instructions on how to load local extensions on [Chrome](https://developer.chrome.com/docs/extensions/mv2/getstarted/#manifest) and [Firefox](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Your_first_WebExtension#installing)<sup>1</sup>.
@@ -46,4 +50,7 @@ Head to constants.js and change the `timeMultiplier` to 0.1 to speed everything 
 
 ## Roadmap
 
-Integrate with with pomo script to prevent loading at all during a pomo
+- [ ] If I walk off while the breathe animation is going for a few minutes, show a button to start the countdown again
+- [x] The content script timeout isn't working. I think maybe JS is getting paused? Use the extension alarm API in the background script to reimplement the feature where an SPA is shut off after the specified time.
+- [ ] There's a bug where if I start with a whitelisted URL (a specific tweet) then navigate to blacklisted URL (my Twitter homescreen), it's not picked up as blacklisted. I need to hook into the history pushtate API to detect SPA navigation.
+- [ ] Integrate with with pomo script to prevent loading at all during a pomo
