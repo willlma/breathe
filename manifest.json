@@ -1,8 +1,7 @@
 {
   "background": {
     "scripts": [
-      "constants.js",
-      "background.js"
+      "src/background.js"
     ],
     "persistent": false
   },
@@ -17,32 +16,31 @@
         "*://*/*"
       ],
       "js": [
-        "./browser-polyfill.js",
-        "./constants.js",
-        "./breathe.js"
+        "./src/browser-polyfill.js",
+        "./src/breathe.js"
       ],
       "css": [
-        "./breathe.css"
+        "./src/breathe.css"
       ],
       "run_at": "document_start"
     }
   ],
   "description": "Do breathing exercises and improve eyesight instead of wasting time on the web.",
   "icons": {
-    "48": "assets/breathe48.png",
-    "128": "assets/breathe128.png"
+    "48": "src/assets/breathe48.png",
+    "128": "src/assets/breathe128.png"
   },
   "manifest_version": 2,
   "name": "Breathe",
   "options_ui": {
-    "page": "settings/index.html"
+    "page": "src/settings/index.html"
   },
   "permissions": [
     "storage",
     "alarms"
   ],
-  "version": "0.12",
+  "version": "0.13",
   "web_accessible_resources": [
-    "assets/breathe.gif"
+    "src/assets/breathe.gif"
   ]
 }
