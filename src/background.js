@@ -1,9 +1,9 @@
 const { alarms, runtime, storage, tabs } = browser;
 // don't try to make shared files with constants in it, Chrome and Firefox do imports differently and it's a pain
-const timeMultiplier = 0.1; // set to 0.1 for dev, keep in sync with breathe.js
+const timeMultiplier = 1; // set to 0.1 for dev, keep in sync with breathe.js
 
-const resetPermissions = async () => {
-  const { permittedTabId } = await storage.get('permittedTabId');
+const closeTabAndReset = async () => {
+  const { permittedTabId } = await storage.session.get('permittedTabId');
   tabs.remove(permittedTabId);
 
   storage.session.set({
@@ -48,7 +48,7 @@ const shouldSkipWait = (duration) => {
 alarms.onAlarm.addListener(({ name }) => {
   switch (name) {
     case 'reset-alarm':
-      return resetPermissions();
+      return closeTabAndReset();
     default:
       return;
   }
@@ -69,9 +69,11 @@ runtime.onMessage.addListener(async ({ duration, domain, getDomain }, { tab }) =
   }
 });
 
-storage.local.set({ lastSkippedDay: null });
-storage.sync.set({
-  // keep these values in sync with settings/index.html
-  blacklist: 'reddit.com',
-  whitelist: 'reddit.com/r/*/comments',
+runtime.onInstalled.addListener(() => {
+  storage.local.set({ lastSkippedDay: null });
+  storage.sync.set({
+    // keep these values in sync with settings/index.html
+    blacklist: 'reddit.com',
+    whitelist: 'reddit.com/r/*/comments',
+  });
 });
