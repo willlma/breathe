@@ -1,8 +1,6 @@
 {
   "background": {
-    "scripts": [
-      "src/background.js"
-    ],
+    "scripts": ["src/background.js"],
     "persistent": false
   },
   "browser_specific_settings": {
@@ -12,16 +10,9 @@
   },
   "content_scripts": [
     {
-      "matches": [
-        "*://*/*"
-      ],
-      "js": [
-        "./src/browser-polyfill.js",
-        "./src/breathe.js"
-      ],
-      "css": [
-        "./src/breathe.css"
-      ],
+      "matches": ["*://*/*"],
+      "js": ["./src/browser-polyfill.js", "./src/breathe.js"],
+      "css": ["./src/breathe.css"],
       "run_at": "document_start"
     }
   ],
@@ -35,12 +26,7 @@
   "options_ui": {
     "page": "src/settings/index.html"
   },
-  "permissions": [
-    "storage",
-    "alarms"
-  ],
-  "version": "0.13",
-  "web_accessible_resources": [
-    "src/assets/breathe.gif"
-  ]
+  "permissions": ["storage", "alarms"],
+  "version": "0.14",
+  "web_accessible_resources": ["src/assets/breathe.gif"]
 }

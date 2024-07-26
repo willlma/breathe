@@ -1,6 +1,6 @@
 #gotta-breathe {
   align-items: center;
-  background: rgb(178, 216, 255);
+  background: rgb(42, 40, 38);
   display: flex;
   flex-direction: column;
   height: 100vh;
@@ -19,18 +19,30 @@
   justify-content: space-around;
   align-items: center;
   flex-direction: column;
+  color: #ddd;
 }
 
 #gotta-breathe label {
   margin-right: 8px;
 }
 
-#gotta-breathe > #headspace-gif-container {
+#gotta-breathe label input {
+  color: #ddd;
+}
+
+#gotta-breathe label input {
+  background: rgb(255, 255, 255, 0.1);
+  border: 1px solid #aaa;
+  padding: 0.5rem;
+}
+
+#gotta-breathe small {
+  display: block;
+  text-align: center;
+}
+
+#gotta-breathe > #rope-circle-gif-container {
   flex: 3;
   overflow: hidden;
   justify-content: flex-end;
-}
-
-#headspace-gif-container img {
-  height: 100%;
 }

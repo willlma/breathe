@@ -1,6 +1,6 @@
 const { alarms, runtime, storage, tabs } = browser;
 // don't try to make shared files with constants in it, Chrome and Firefox do imports differently and it's a pain
-const timeMultiplier = 1; // set to 0.1 for dev, keep in sync with breathe.js
+const timeMultiplier = 0.1; // set to 0.1 for dev, keep in sync with breathe.js
 
 const closeTabAndReset = async () => {
   const { permittedTabId } = await storage.session.get('permittedTabId');
@@ -12,22 +12,24 @@ const closeTabAndReset = async () => {
   });
 };
 
-const setPermittedFlags = (domain, tabId) => {
+const setPermittedFlags = async (domain, tabId) => {
+  // Fire and forget - don't await this operation
   storage.session.set({
     permittedDomain: domain,
     permittedTabId: tabId,
   });
 
-  return Promise.all([alarms.get('reset-alarm'), storage.session.get('duration')]).then(
-    ([alarm, { duration = 10 }]) => {
-      // if there's already another procrastinating tab open. Don't extend it.
-      if (!alarm) {
-        alarms.create('reset-alarm', { delayInMinutes: duration * timeMultiplier });
-      }
+  const [alarm, { duration = 10 }] = await Promise.all([
+    alarms.get('reset-alarm'),
+    storage.session.get('duration'),
+  ]);
 
-      return duration;
-    }
-  );
+  // if there's no existing procrastinating tab open, create a new alarm
+  if (!alarm) {
+    await alarms.create('reset-alarm', { delayInMinutes: duration * timeMultiplier });
+  }
+
+  return duration;
 };
 
 const shouldSkipWait = (duration) => {
@@ -65,11 +67,15 @@ runtime.onMessage.addListener(async ({ duration, domain, getDomain }, { tab }) =
     // using separate if condition to allow for expanding possible messages
     return storage.session
       .get(['permittedDomain', 'permittedTabId'])
-      .then(({ permittedDomain, permittedTabId }) => tab.id === permittedTabId && permittedDomain);
+      .then(({ permittedDomain, permittedTabId }) =>
+        tab.id === permittedTabId ? permittedDomain : '',
+      );
   }
 });
 
-runtime.onInstalled.addListener(() => {
+runtime.onInstalled.addListener(({ reason }) => {
+  if (reason !== 'install') return;
+
   storage.local.set({ lastSkippedDay: null });
   storage.sync.set({
     // keep these values in sync with settings/index.html

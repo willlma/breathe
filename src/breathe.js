@@ -1,6 +1,6 @@
 const { runtime, storage } = browser;
 // don't try to make shared files with constants in it, Chrome and Firefox do imports differently and it's a pain
-const timeMultiplier = 1; // set to 0.1 for dev, keep in sync with background.js
+const timeMultiplier = 0.1; // set to 0.1 for dev, keep in sync with background.js
 const messageTimeout = 2000;
 
 const load = (fileName) =>
@@ -51,7 +51,7 @@ const breathe = () =>
     const form = div.querySelector('form');
     const footer = div.querySelector('#breathe-footer');
     const continueButton = footer.querySelector('button');
-    div.querySelector('img').src = runtime.getURL('/src/assets/breathe.gif');
+    div.querySelector('img').src = runtime.getURL('/src/assets/circle-rope.gif');
 
     continueButton.addEventListener('click', () => {
       // console.log('on continue click');
@@ -113,8 +113,8 @@ const listHasMatch = (list) =>
     ?.split('\n')
     .find((site) =>
       location.href.match(
-        new RegExp(site.replace(/[-\\^$+?.()|[\]{}]/g, '\\$&').replace(/\*/g, '\\w+'))
-      )
+        new RegExp(site.replace(/[-\\^$+?.()|[\]{}]/g, '\\$&').replace(/\*/g, '\\w+')),
+      ),
     );
 
 const main = () => {
@@ -127,7 +127,7 @@ const main = () => {
         });
       }
     },
-    () => console.error('failed to get sync storage')
+    () => console.error('failed to get sync storage'),
   );
 };
 
