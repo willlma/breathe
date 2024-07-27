@@ -1,6 +1,6 @@
 const { alarms, runtime, storage, tabs } = browser;
 // don't try to make shared files with constants in it, Chrome and Firefox do imports differently and it's a pain
-const timeMultiplier = 1; // set to 0.1 for dev, keep in sync with breathe.js
+const timeMultiplier = 0.1; // set to 0.1 for dev, keep in sync with breathe.js
 
 const closeTabAndReset = async () => {
   const { permittedTabId } = await storage.session.get('permittedTabId');
@@ -12,9 +12,11 @@ const closeTabAndReset = async () => {
   });
 };
 
-const setPermittedFlags = async (domain, tabId) => {
+const setPermittedFlags = async (tabId) => {
+  const { domainToCheck: domain } = await storage.session.get('domainToCheck');
   // Fire and forget - don't await this operation
   storage.session.set({
+    domainToCheck: null,
     permittedDomain: domain,
     permittedTabId: tabId,
   });
@@ -56,13 +58,13 @@ alarms.onAlarm.addListener(({ name }) => {
   }
 });
 
-runtime.onMessage.addListener(async ({ domain, domainToCheck, duration, getDomain }, { tab }) => {
+runtime.onMessage.addListener(async ({ domain, domainToCheck, duration, permit }, { tab }) => {
   if (duration) {
     storage.session.set({ duration });
     // skip the wait one time if the duration is under 5 mins
     return shouldSkipWait(duration);
-  } else if (domain) {
-    const duration = await setPermittedFlags(domain, tab.id);
+  } else if (permit) {
+    setPermittedFlags(tab.id);
   } else if (domainToCheck) {
     const { permittedDomain, permittedTabId } = await storage.session.get([
       'permittedDomain',
@@ -74,6 +76,7 @@ runtime.onMessage.addListener(async ({ domain, domainToCheck, duration, getDomai
     const { cheatDay } = await storage.sync.get('cheatDay');
     const fileName = parseInt(cheatDay) === new Date().getDay() ? 'cheat-day' : 'breathe';
     tabs.update(permittedTabId, { url: runtime.getURL(`src/${fileName}.html`) });
+    storage.session.set({ domainToCheck });
   }
 });
 

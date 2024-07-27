@@ -4,7 +4,55 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <style></style>
+    <style>
+      body {
+        align-items: center;
+        background: rgb(42, 40, 38);
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        justify-content: center;
+        position: fixed;
+        top: 0;
+        width: 100vw;
+        z-index: 9999999999999;
+        font: normal medium sans-serif;
+      }
+
+      body > div {
+        flex: 1;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        flex-direction: column;
+        color: #ddd;
+      }
+
+      body label {
+        margin-right: 8px;
+      }
+
+      body label input {
+        color: #ddd;
+      }
+
+      body label input {
+        background: rgb(255, 255, 255, 0.1);
+        border: 1px solid #aaa;
+        padding: 0.5rem;
+      }
+
+      body small {
+        display: block;
+        text-align: center;
+      }
+
+      body > #rope-circle-gif-container {
+        flex: 3;
+        overflow: hidden;
+        justify-content: flex-end;
+      }
+    </style>
   </head>
   <body>
     <div>
@@ -21,8 +69,12 @@
         Focus on something 20 feet away for 20 seconds. It's good for your 👀
       </div>
     </div>
-    <div id="rope-circle-gif-container"><img alt="Breathing gif" /></div>
+    <div id="rope-circle-gif-container">
+      <img src="assets/circle-rope.gif" alt="Breathing gif" />
+    </div>
     <div id="breathe-footer"><button style="display: none">Continue</button></div>
-    <script type="application/javascript"></script>
+
+    <script type="application/javascript" src="./send-domain.js"></script>
+    <script type="application/javascript" src="./form.js"></script>
   </body>
 </html>
