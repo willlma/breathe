@@ -1,42 +1,5 @@
 const { runtime, storage } = browser;
 
-const load = (fileName) =>
-  fetch(runtime.getURL(`/src/${fileName}`))
-    .then((res) => res.text())
-    .then((html) => {
-      const div = document.createElement('div');
-      div.id = 'gotta-breathe';
-      div.innerHTML = html;
-      return div;
-    });
-
-const renderElement = (div) => {
-  let intervalId;
-
-  function appendElements() {
-    const { body } = document;
-    if (!body) return;
-
-    body.append(div);
-    if (intervalId) clearInterval(intervalId);
-  }
-
-  document.addEventListener('DOMContentLoaded', appendElements);
-  intervalId = setInterval(appendElements, 20);
-};
-
-const breathe = () =>
-  load('breathe.html').then((div) => {
-    return div;
-  });
-
-// const cheat = () =>
-//   load('cheat-day.html').then((div) => {
-//     sendDomain();
-//     setTimeout(() => div.remove(), messageTimeout * timeMultiplier);
-//     return div;
-//   });
-
 const listHasMatch = (list) =>
   list
     ?.split('\n')

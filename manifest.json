@@ -11,8 +11,7 @@
   "content_scripts": [
     {
       "matches": ["*://*/*"],
-      "js": ["./src/browser-polyfill.js", "./src/breathe.js"],
-      "css": ["./src/breathe.css"],
+      "js": ["./src/browser-polyfill.js", "./src/content.js"],
       "run_at": "document_start"
     }
   ],
@@ -27,6 +26,6 @@
     "page": "src/settings/index.html"
   },
   "permissions": ["storage", "alarms"],
-  "version": "0.14",
+  "version": "0.15",
   "web_accessible_resources": ["src/assets/breathe.gif"]
 }

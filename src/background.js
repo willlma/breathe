@@ -1,10 +1,14 @@
 const { alarms, runtime, storage, tabs } = browser;
 // don't try to make shared files with constants in it, Chrome and Firefox do imports differently and it's a pain
-const timeMultiplier = 0.1; // set to 0.1 for dev, keep in sync with breathe.js
+const timeMultiplier = 1; // set to 0.1 for dev, keep in sync with permit.js
+const isCheatDay = async () => {
+  const { cheatDay } = await storage.sync.get('cheatDay');
+  return parseInt(cheatDay) === new Date().getDay();
+};
 
 const closeTabAndReset = async () => {
   const { permittedTabId } = await storage.session.get('permittedTabId');
-  tabs.remove(permittedTabId);
+  if (!(await isCheatDay())) tabs.remove(permittedTabId);
 
   storage.session.set({
     permittedDomain: null,
@@ -73,8 +77,7 @@ runtime.onMessage.addListener(async ({ domain, domainToCheck, duration, permit }
 
     if (permittedTabId && (tab.id !== permittedTabId || permittedDomain === domainToCheck)) return;
 
-    const { cheatDay } = await storage.sync.get('cheatDay');
-    const fileName = parseInt(cheatDay) === new Date().getDay() ? 'cheat-day' : 'breathe';
+    const fileName = (await isCheatDay()) ? 'cheat-day' : 'form';
     tabs.update(permittedTabId, { url: runtime.getURL(`src/${fileName}.html`) });
     storage.session.set({ domainToCheck });
   }
