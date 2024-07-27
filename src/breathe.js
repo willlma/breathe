@@ -1,6 +1,6 @@
 const { runtime, storage } = browser;
 // don't try to make shared files with constants in it, Chrome and Firefox do imports differently and it's a pain
-const timeMultiplier = 0.1; // set to 0.1 for dev, keep in sync with background.js
+const timeMultiplier = 1; // set to 0.1 for dev, keep in sync with background.js
 const messageTimeout = 2000;
 
 const load = (fileName) =>
@@ -121,10 +121,7 @@ const main = () => {
   storage.sync.get(['blacklist', 'whitelist', 'cheatDay']).then(
     ({ blacklist, whitelist, cheatDay }) => {
       if (listHasMatch(blacklist) && !listHasMatch(whitelist)) {
-        runtime.sendMessage({ getDomain: true }).then((domain) => {
-          if (domain === getDomain()) return;
-          (parseInt(cheatDay) === new Date().getDay() ? cheat : breathe)().then(renderElement);
-        });
+        runtime.sendMessage({ domainToCheck: getDomain() });
       }
     },
     () => console.error('failed to get sync storage'),
