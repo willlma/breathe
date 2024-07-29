@@ -75,7 +75,7 @@ runtime.onMessage.addListener(async ({ domain, domainToCheck, duration, permit }
       'permittedTabId',
     ]);
 
-    if (permittedTabId && (tab.id !== permittedTabId || permittedDomain === domainToCheck)) return;
+    if (tab.id === permittedTabId && permittedDomain === domainToCheck) return;
 
     const fileName = (await isCheatDay()) ? 'cheat-day' : 'form';
     tabs.update(permittedTabId, { url: runtime.getURL(`src/${fileName}.html`) });

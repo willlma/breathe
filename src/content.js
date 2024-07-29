@@ -22,7 +22,7 @@ const getDomain = () => {
   return split.join(dot);
 };
 
-const main = () => {
+const checkDomain = () => {
   storage.sync.get(['blacklist', 'whitelist']).then(
     ({ blacklist, whitelist }) => {
       if (listHasMatch(blacklist) && !listHasMatch(whitelist)) {
@@ -33,5 +33,5 @@ const main = () => {
   );
 };
 
-window.addEventListener('popstate', main);
-main();
+window.addEventListener('popstate', checkDomain);
+checkDomain();

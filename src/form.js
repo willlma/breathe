@@ -15,6 +15,8 @@ continueButton.addEventListener('click', () => {
 form.addEventListener('submit', (evt) => {
   evt.preventDefault();
 
+  document.querySelector('#rope-circle-gif-container img').style.opacity = 1;
+
   let timeoutId;
   runtime
     .sendMessage({ duration: parseInt(form.querySelector('input').value) })
@@ -25,7 +27,12 @@ form.addEventListener('submit', (evt) => {
       }
     });
   document.querySelector('#breathe-focus-message').style.removeProperty('visibility');
-  form.querySelector('button').textContent = 'Update';
+  const submit = form.querySelector('button');
+  submit.textContent = 'Update';
+  submit.disabled = true;
+  form.querySelector('input').addEventListener('input', () => {
+    submit.disabled = false;
+  });
 
   // prevent user from checking out another tab/app while waiting
   const resetTimeout = () => {
