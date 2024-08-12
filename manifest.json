@@ -10,7 +10,7 @@
       "run_at": "document_start"
     }
   ],
-  "description": "Pause to take a breath to waste less time on the web.",
+  "description": "Pause and take a breath. Waste less time on the web.",
   "icons": {
     "48": "src/assets/take-a-breath48.png",
     "128": "src/assets/take-a-breath128.png"
@@ -21,6 +21,6 @@
     "page": "src/settings/index.html"
   },
   "permissions": ["storage", "alarms"],
-  "version": "0.16",
+  "version": "0.17",
   "web_accessible_resources": ["src/assets/breathe.gif"]
 }
