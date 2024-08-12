@@ -5,44 +5,27 @@
   },
   "content_scripts": [
     {
-      "matches": [
-        "*://*/*"
-      ],
-      "js": [
-        "./src/browser-polyfill.js",
-        "./src/breathe.js"
-      ],
-      "css": [
-        "./src/breathe.css"
-      ],
+      "matches": ["*://*/*"],
+      "js": ["./src/browser-polyfill.js", "./src/content.js"],
       "run_at": "document_start"
     }
   ],
-  "description": "Do breathing exercises and improve eyesight instead of wasting time on the web.",
+  "description": "Pause and take a breath. Waste less time on the web.",
   "icons": {
-    "48": "src/assets/breathe48.png",
-    "128": "src/assets/breathe128.png"
+    "48": "src/assets/take-a-breath48.png",
+    "128": "src/assets/take-a-breath128.png"
   },
   "manifest_version": 3,
-  "name": "Breathe",
+  "name": "Take a breath",
   "options_ui": {
     "page": "src/settings/index.html"
   },
-  "permissions": [
-    "storage",
-    "alarms"
-  ],
-  "version": "0.13",
+  "permissions": ["storage", "alarms"],
+  "version": "0.16",
   "web_accessible_resources": [
     {
-      "resources": [
-        "src/assets/breathe.gif",
-        "src/breathe.html",
-        "src/cheat-day.html"
-      ],
-      "matches": [
-        "*://*/*"
-      ]
+      "resources": ["src/assets/circle-rope.gif", "src/form.html", "src/cheat-day.html"],
+      "matches": ["*://*/*"]
     }
   ]
 }
