@@ -21,7 +21,7 @@
     "page": "src/settings/index.html"
   },
   "permissions": ["storage", "alarms"],
-  "version": "0.16",
+  "version": "0.17",
   "web_accessible_resources": [
     {
       "resources": ["src/assets/circle-rope.gif", "src/form.html", "src/cheat-day.html"],
