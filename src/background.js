@@ -1,36 +1,47 @@
-const { alarms, runtime, storage } = browser;
+const { alarms, runtime, storage, tabs } = browser;
 // don't try to make shared files with constants in it, Chrome and Firefox do imports differently and it's a pain
-const timeMultiplier = 1; // set to 0.1 for dev, keep in sync with breathe.js
+const timeMultiplier = 1; // set to 0.1 for dev, keep in sync with permit.js
+const isCheatDay = async () => {
+  const { cheatDay } = await storage.sync.get('cheatDay');
+  return parseInt(cheatDay) === new Date().getDay();
+};
 
-const resetPermissions = () =>
+const closeTabAndReset = async () => {
+  const { permittedTabId } = await storage.session.get('permittedTabId');
+  if (!(await isCheatDay())) tabs.remove(permittedTabId);
+
   storage.session.set({
     permittedDomain: null,
     permittedTabId: null,
   });
+};
 
-const setPermittedFlags = (domain, tabId) => {
+const setPermittedFlags = async (tabId) => {
+  const { domainToCheck: domain } = await storage.session.get('domainToCheck');
+  // Fire and forget - don't await this operation
   storage.session.set({
+    domainToCheck: null,
     permittedDomain: domain,
     permittedTabId: tabId,
   });
 
-  return Promise.all([alarms.get('reset-alarm'), storage.session.get('duration')]).then(
-    ([alarm, { duration = 25 }]) => {
-      // if there's already another procrastinating tab open. Don't extend it.
-      if (!alarm) {
-        alarms.create('reset-alarm', { delayInMinutes: duration * timeMultiplier });
-        alarms.onAlarm.addListener(resetPermissions);
-      }
+  const [alarm, { duration = 10 }] = await Promise.all([
+    alarms.get('reset-alarm'),
+    storage.session.get('duration'),
+  ]);
 
-      return duration;
-    }
-  );
+  // if there's no existing procrastinating tab open, create a new alarm
+  if (!alarm) {
+    await alarms.create('reset-alarm', { delayInMinutes: duration * timeMultiplier });
+  }
+
+  return duration;
 };
 
 const shouldSkipWait = (duration) => {
   const date = new Date();
 
-  // only skip the wait if you'll procrastinate less than 5 minutes (and not after midnight)
+  // only skip the wait if you'll procrastinate less than 5 minutes (and not between midnight and 7)
   if (duration > 5 || date.getHours() < 7) return false;
 
   return storage.local.get('lastSkippedDay').then(({ lastSkippedDay }) => {
@@ -42,24 +53,43 @@ const shouldSkipWait = (duration) => {
   });
 };
 
-runtime.onMessage.addListener(({ duration, domain, getDomain }, { tab }) => {
+alarms.onAlarm.addListener(({ name }) => {
+  switch (name) {
+    case 'reset-alarm':
+      return closeTabAndReset();
+    default:
+      return;
+  }
+});
+
+runtime.onMessage.addListener(async ({ domain, domainToCheck, duration, permit }, { tab }) => {
   if (duration) {
     storage.session.set({ duration });
     // skip the wait one time if the duration is under 5 mins
     return shouldSkipWait(duration);
-  } else if (domain) {
-    return setPermittedFlags(domain, tab.id);
-  } else if (getDomain) {
-    // using separate if condition to allow for expanding possible messages
-    return storage.session
-      .get(['permittedDomain', 'permittedTabId'])
-      .then(({ permittedDomain, permittedTabId }) => tab.id === permittedTabId && permittedDomain);
+  } else if (permit) {
+    setPermittedFlags(tab.id);
+  } else if (domainToCheck) {
+    const { permittedDomain, permittedTabId } = await storage.session.get([
+      'permittedDomain',
+      'permittedTabId',
+    ]);
+
+    if (tab.id === permittedTabId && permittedDomain === domainToCheck) return;
+
+    const fileName = (await isCheatDay()) ? 'cheat-day' : 'form';
+    tabs.update(permittedTabId, { url: runtime.getURL(`src/${fileName}.html`) });
+    storage.session.set({ domainToCheck });
   }
 });
 
-storage.local.set({ lastSkippedDay: null });
-storage.sync.set({
-  // keep these values in sync with settings/index.html
-  blacklist: 'reddit.com',
-  whitelist: 'reddit.com/r/*/comments',
+runtime.onInstalled.addListener(({ reason }) => {
+  if (reason !== 'install') return;
+
+  storage.local.set({ lastSkippedDay: null });
+  storage.sync.set({
+    // keep these values in sync with settings/index.html
+    blacklist: 'reddit.com',
+    whitelist: 'reddit.com/r/*/comments',
+  });
 });

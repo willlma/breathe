@@ -1,0 +1,104 @@
+<!doctype html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      html,
+      body {
+        height: 100vh;
+        width: 100vw;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        align-items: center;
+        background: rgb(42, 40, 38);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        font: normal medium sans-serif;
+      }
+
+      body > div {
+        flex: 1;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        flex-direction: column;
+        color: #ddd;
+      }
+
+      form {
+        margin: 0 2rem;
+      }
+
+      form > * {
+        display: block;
+      }
+
+      label {
+        margin-top: 1rem;
+        margin-bottom: 0.5rem;
+      }
+
+      label input {
+        color: #ddd;
+        background: rgb(255, 255, 255, 0.1);
+        border: 1px solid #aaa;
+        border-radius: 0.25rem;
+        padding: 0.5rem;
+        font-size: 1em;
+      }
+
+      small {
+        margin-bottom: 2rem;
+      }
+
+      button {
+        margin: 0 auto 2rem auto;
+      }
+
+      #rope-circle-gif-container {
+        flex: 3;
+        overflow: hidden;
+        justify-content: flex-end;
+      }
+
+      #rope-circle-gif-container img {
+        opacity: 0;
+        transition: opacity 3s;
+        /* overflow: hidden; */
+        max-width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <form>
+        <label>
+          <span>I want to procrastinate for</span>
+          <input min="1" max="45" type="number" value="10" />
+          <span>minutes</span>
+        </label>
+        <small>Set to ≤ 5 minutes to skip the wait (once)</small>
+        <button type="submit">Start the wait</button>
+        <div id="breathe-focus-message" style="visibility: hidden">
+          Focus on something 20 feet away for 20 seconds. It's good for your 👀
+        </div>
+      </form>
+    </div>
+    <div id="rope-circle-gif-container">
+      <img src="assets/circle-rope.gif" alt="Breathing gif" />
+    </div>
+    <div id="breathe-footer">
+      <button style="display: none">Continue</button>
+    </div>
+
+    <script type="application/javascript" src="./permit.js"></script>
+    <script type="application/javascript" src="./form.js"></script>
+  </body>
+</html>
