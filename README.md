@@ -64,6 +64,12 @@ Head to constants.js and change the `timeMultiplier` to 0.1 to speed everything 
 - [x] There's a bug where if I start with a whitelisted URL (a specific tweet) then navigate to blacklisted URL (my Twitter homescreen), it's not picked up as blacklisted. I need to hook into the history pushtate API to detect SPA navigation.
 - [ ] Bug: x.com matches vox.com. Make sure that it can handle any protocol or subdomain but not be too eager
 - [x] Check whether to block on history pushstate (SPAs)
+- [ ] Show cheat day message once every 30 mins
+- [ ] Ship with better default sites (facebook, instagram, TikTok)
+- [ ] Increase wait time with each use (maybe stick to 25s for the first three), and show the wait time
+- Simplify the form
+  - [ ] Hide the 5 minute helper if used
+  - [ ] Hide the gif once the continue button is ready
 
 ## My lists
 
@@ -72,8 +78,6 @@ hn.algolia.com
 news.ycombinator.com
 pinboard.in/popular
 reddit.com
-theoldreader.com
-twitter.com
 https://x.com
 ```
 
@@ -81,6 +85,37 @@ https://x.com
 hn.algolia.com/?query=
 news.ycombinator.com/item
 reddit.com/r/*/comments
-twitter.com/*/status
 https://x.com/*/status
 ```
+
+## Add-on/Web store information
+
+### Description
+
+This is an anti-procrastination tool that takes a softer approach than most site blocking addons. Those don't work because you eventually just uninstall or disable them to continue your guilty pleasure. Rather than blocking you, this extension slows you down before you can visit time-wasting websites like Twitter, Facebook, Instagram, or Reddit.
+
+When you try to visit one, it asks you how long you'd like to browse it for. Then you must wait 20 seconds before you can gain access. This helps break the dopamine loop associated with easily visiting these websites multiple times a day. When the time you defined is up, the tab closes.
+
+Go to settings to set websites you don't want to visit, like:
+https://x.com
+
+If you still want to be able to see certain pages of that website (say someone sends you a tweet), you can whitelist them with wildcards, like this:
+https://x.com/*/status
+
+### Chrome
+
+##### Single Purpose
+
+This extension is designed to help you focus by delaying the loading of certain websites.
+
+##### Storage Justification
+
+Stores a list of URLs configured by the user to block/allow websites.
+
+##### Alarms Justification
+
+The user configures how long they would like to spend on a site. After that delay, the tab is closed. The alarms API is needed to trigger the event after the specified delay.
+
+##### Host Permission Justification
+
+The extension needs to be able to block certain websites whenever the URL changes which must use the history popstate API inside a content script loaded into every page.
