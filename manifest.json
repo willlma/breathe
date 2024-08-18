@@ -10,6 +10,11 @@
       "run_at": "document_start"
     }
   ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "{0f0b2b69-0733-4738-aec9-722ce434574b}"
+    }
+  },
   "description": "Pause and take a breath. Waste less time on the web.",
   "icons": {
     "48": "src/assets/take-a-breath48.png",
@@ -20,7 +25,7 @@
   "options_ui": {
     "page": "src/settings/index.html"
   },
-  "permissions": ["storage", "alarms"],
+  "permissions": ["alarms", "storage", "tabs"],
   "version": "0.17",
   "web_accessible_resources": ["src/assets/breathe.gif"]
 }
