@@ -16,18 +16,16 @@ const closeTabAndReset = async () => {
   });
 };
 
-const setPermittedFlags = async (tabId) => {
+const permitAndNavigate = async (tabId) => {
   const { domainToCheck: domain } = await storage.session.get('domainToCheck');
-  // Fire and forget - don't await this operation
-  storage.session.set({
-    domainToCheck: null,
-    permittedDomain: domain,
-    permittedTabId: tabId,
-  });
-
-  const [alarm, { duration = 10 }] = await Promise.all([
+  const [alarm, { duration = 10, redirectionURL }, _] = await Promise.all([
     alarms.get('reset-alarm'),
-    storage.session.get('duration'),
+    storage.session.get(['duration', 'redirectionURL']),
+    storage.session.set({
+      domainToCheck: null,
+      permittedDomain: domain,
+      permittedTabId: tabId,
+    }),
   ]);
 
   // if there's no existing procrastinating tab open, create a new alarm
@@ -35,7 +33,7 @@ const setPermittedFlags = async (tabId) => {
     await alarms.create('reset-alarm', { delayInMinutes: duration * timeMultiplier });
   }
 
-  return duration;
+  tabs.update(tabId, { url: redirectionURL, loadReplace: true });
 };
 
 const shouldSkipWait = (duration) => {
@@ -62,13 +60,14 @@ alarms.onAlarm.addListener(({ name }) => {
   }
 });
 
-runtime.onMessage.addListener(async ({ domain, domainToCheck, duration, permit }, { tab }) => {
+runtime.onMessage.addListener(async ({ domainToCheck, duration, permit }, { tab }) => {
   if (duration) {
     storage.session.set({ duration });
     // skip the wait one time if the duration is under 5 mins
     return shouldSkipWait(duration);
   } else if (permit) {
-    setPermittedFlags(tab.id);
+    // await to ensure URL is permitted before redirecting to an otherwise blocked page
+    await permitAndNavigate(tab.id);
   } else if (domainToCheck) {
     const { permittedDomain, permittedTabId } = await storage.session.get([
       'permittedDomain',
@@ -78,7 +77,8 @@ runtime.onMessage.addListener(async ({ domain, domainToCheck, duration, permit }
     if (tab.id === permittedTabId && permittedDomain === domainToCheck) return;
 
     const fileName = (await isCheatDay()) ? 'cheat-day' : 'form';
-    tabs.update(permittedTabId, { url: runtime.getURL(`src/${fileName}.html`) });
+    storage.session.set({ redirectionURL: tab.url });
+    tabs.update(permittedTabId, { url: runtime.getURL(`src/${fileName}.html`), loadReplace: true });
     storage.session.set({ domainToCheck });
   }
 });
