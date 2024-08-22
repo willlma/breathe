@@ -59,17 +59,16 @@ Head to constants.js and change the `timeMultiplier` to 0.1 to speed everything 
 
 ## Roadmap
 
-- [ ] If I walk off while the breathe animation is going for a few minutes, show a button to start the countdown again
-- [x] The content script timeout isn't working. I think maybe JS is getting paused? Use the extension alarm API in the background script to reimplement the feature where an SPA is shut off after the specified time.
-- [x] There's a bug where if I start with a whitelisted URL (a specific tweet) then navigate to blacklisted URL (my Twitter homescreen), it's not picked up as blacklisted. I need to hook into the history pushtate API to detect SPA navigation.
 - [ ] Bug: x.com matches vox.com. Make sure that it can handle any protocol or subdomain but not be too eager
-- [x] Check whether to block on history pushstate (SPAs)
+- [ ] Don't allow cheat day id it's between midnight and 6
 - [ ] Show cheat day message once every 30 mins
 - [ ] Ship with better default sites (facebook, instagram, TikTok)
-- [ ] Increase wait time with each use (maybe stick to 25s for the first three), and show the wait time
 - Simplify the form
   - [ ] Hide the 5 minute helper if used
   - [ ] Hide the gif once the continue button is ready
+- [ ] If I walk off while the breathe animation is going for a few minutes, show a button to start the countdown again
+- [ ] Increase wait time with each use (maybe stick to 25s for the first three), and show the wait time
+- [ ] Dark theme for settings
 
 ## My lists
 
