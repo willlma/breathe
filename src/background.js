@@ -1,14 +1,22 @@
 const { alarms, runtime, storage, tabs } = browser;
 // don't try to make shared files with constants in it, Chrome and Firefox do imports differently and it's a pain
 const timeMultiplier = 0.1; // set to 0.1 for dev, keep in sync with permit.js
+
+const isBefore7am = (date = new Date()) => date.getHours() < 7;
+
 const isCheatDay = async () => {
+  if (isBefore7am()) return false;
+
   const { cheatDay } = await storage.sync.get('cheatDay');
   return parseInt(cheatDay) === new Date().getDay();
 };
 
 const closeTabAndReset = async () => {
   const { permittedTabId } = await storage.session.get('permittedTabId');
-  if (!(await isCheatDay())) tabs.remove(permittedTabId);
+  if (!(await isCheatDay())) {
+    const shouldClose = await tabs.sendMessage(permittedTabId, { close: true });
+    if (shouldClose) tabs.remove(permittedTabId);
+  }
 
   storage.session.set({
     permittedDomain: null,
@@ -40,7 +48,7 @@ const shouldSkipWait = (duration) => {
   const date = new Date();
 
   // only skip the wait if you'll procrastinate less than 5 minutes (and not between midnight and 7)
-  if (duration > 5 || date.getHours() < 7) return false;
+  if (duration > 5 || isBefore7am(date)) return false;
 
   return storage.local.get('lastSkippedDay').then(({ lastSkippedDay }) => {
     const day = date.getDay();
