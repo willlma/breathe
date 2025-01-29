@@ -48,7 +48,7 @@ Add websites you'd rather not waste your time on to `manifest.json`'s `matches` 
 
 ## Manual Testing
 
-Head to constants.js and change the `timeMultiplier` to 0.1 to speed everything up.
+Head to background.js and permit.js and change the `timeMultiplier` to 0.1 to speed everything up.
 
 1. Head to reddit.com to make sure the overlay shows up
 2. If it's your cheat day, you should still see the splash screen every 25 minutes or every new site
@@ -59,15 +59,14 @@ Head to constants.js and change the `timeMultiplier` to 0.1 to speed everything 
 
 ## Roadmap
 
-- [ ] Bug: x.com matches vox.com. Make sure that it can handle any protocol or subdomain but not be too eager
-- [ ] Don't allow cheat day id it's between midnight and 6
-- [ ] Show cheat day message once every 30 mins
+- [ ] Don't allow cheat day if it's between midnight and 6
 - [ ] Ship with better default sites (facebook, instagram, TikTok)
 - Simplify the form
   - [ ] Hide the 5 minute helper if used
   - [ ] Hide the gif once the continue button is ready
+
+- [ ] Bug: x.com matches vox.com. Make sure that it can handle any protocol or subdomain but not be too eager
 - [ ] If I walk off while the breathe animation is going for a few minutes, show a button to start the countdown again
-- [ ] Increase wait time with each use (maybe stick to 25s for the first three), and show the wait time
 - [ ] Dark theme for settings
 
 ## My lists
@@ -77,14 +76,19 @@ hn.algolia.com
 news.ycombinator.com
 pinboard.in/popular
 reddit.com
+theoldreader.com
+twitter.com
 https://x.com
+theoldreader.com
 ```
 
 ```
 hn.algolia.com/?query=
 news.ycombinator.com/item
 reddit.com/r/*/comments
-https://x.com/*/status
+twitter.com/*/status
+x.com/*/status
+reddit.com/message
 ```
 
 ## Add-on/Web store information

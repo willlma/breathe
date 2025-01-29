@@ -1,6 +1,6 @@
 const { alarms, runtime, storage, tabs } = browser;
 // don't try to make shared files with constants in it, Chrome and Firefox do imports differently and it's a pain
-const timeMultiplier = 1; // set to 0.1 for dev, keep in sync with permit.js
+const timeMultiplier = 0.1; // set to 0.1 for dev, keep in sync with permit.js
 const isCheatDay = async () => {
   const { cheatDay } = await storage.sync.get('cheatDay');
   return parseInt(cheatDay) === new Date().getDay();
@@ -83,13 +83,20 @@ runtime.onMessage.addListener(async ({ domainToCheck, duration, permit }, { tab 
   }
 });
 
-runtime.onInstalled.addListener(({ reason }) => {
-  if (reason !== 'install') return;
-
-  storage.local.set({ lastSkippedDay: null });
-  storage.sync.set({
-    // keep these values in sync with settings/index.html
+runtime.onInstalled.addListener(async ({ reason }) => {
+  const defaultSettings = {
     blacklist: 'reddit.com',
     whitelist: 'reddit.com/r/*/comments',
-  });
+    waitDurationSeconds: 25,
+  };
+
+  if (reason === 'install') {
+    storage.local.set({ lastSkippedDay: null });
+    storage.sync.set(defaultSettings);
+  }
+
+  if (reason === 'update') {
+    const settings = await storage.sync.get();
+    storage.sync.set({ ...defaultSettings, ...settings });
+  }
 });
