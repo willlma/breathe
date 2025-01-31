@@ -1,6 +1,7 @@
 {
   "scripts": {
     "build": "web-ext build",
+    "run-android": "web-ext run -t firefox-android",
     "test:debug": "playwright test --debug",
     "test": "playwright test"
   },

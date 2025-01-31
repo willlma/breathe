@@ -59,7 +59,7 @@ Head to background.js and permit.js and change the `timeMultiplier` to 0.1 to sp
 
 ## Roadmap
 
-- [ ] Don't allow cheat day if it's between midnight and 6
+- [x] Don't allow cheat day if it's between midnight and 6
 - [ ] Ship with better default sites (facebook, instagram, TikTok)
 - Simplify the form
   - [ ] Hide the 5 minute helper if used
@@ -73,22 +73,23 @@ Head to background.js and permit.js and change the `timeMultiplier` to 0.1 to sp
 
 ```
 hn.algolia.com
+news.google.com
 news.ycombinator.com
 pinboard.in/popular
 reddit.com
 theoldreader.com
+theoldreader.com
 twitter.com
 https://x.com
-theoldreader.com
 ```
 
 ```
 hn.algolia.com/?query=
 news.ycombinator.com/item
+reddit.com/message
 reddit.com/r/*/comments
 twitter.com/*/status
 x.com/*/status
-reddit.com/message
 ```
 
 ## Add-on/Web store information

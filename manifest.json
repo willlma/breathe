@@ -26,6 +26,6 @@
     "page": "src/settings/index.html"
   },
   "permissions": ["alarms", "storage", "tabs"],
-  "version": "0.19",
+  "version": "1.0",
   "web_accessible_resources": ["src/assets/breathe.gif"]
 }

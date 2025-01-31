@@ -1,6 +1,6 @@
 const { alarms, runtime, storage, tabs } = browser;
 // don't try to make shared files with constants in it, Chrome and Firefox do imports differently and it's a pain
-const timeMultiplier = 0.1; // set to 0.1 for dev, keep in sync with permit.js
+const timeMultiplier = 1; // set to 0.1 for dev, keep in sync with permit.js
 
 const isBefore7am = (date = new Date()) => date.getHours() < 7;
 
@@ -85,13 +85,23 @@ runtime.onMessage.addListener(async ({ domainToCheck, duration, permit }, { tab 
     if (tab.id === permittedTabId && permittedDomain === domainToCheck) return;
 
     const fileName = (await isCheatDay()) ? 'cheat-day' : 'form';
+
     storage.session.set({ redirectionURL: tab.url });
-    tabs.update(permittedTabId, { url: runtime.getURL(`src/${fileName}.html`), loadReplace: true });
+    const url = runtime.getURL(`src/${fileName}.html`);
+    try {
+      tabs.update(permittedTabId, { url, loadReplace: true });
+    } catch {
+      // No support for loadReplace on Android
+      // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/tabs/update
+      tabs.update(permittedTabId, { url });
+    }
     storage.session.set({ domainToCheck });
   }
 });
 
 runtime.onInstalled.addListener(async ({ reason }) => {
+  const settings = await storage.sync.get();
+
   const defaultSettings = {
     blacklist: 'reddit.com',
     whitelist: 'reddit.com/r/*/comments',
@@ -100,11 +110,9 @@ runtime.onInstalled.addListener(async ({ reason }) => {
 
   if (reason === 'install') {
     storage.local.set({ lastSkippedDay: null });
-    storage.sync.set(defaultSettings);
   }
 
-  if (reason === 'update') {
-    const settings = await storage.sync.get();
+  if (['install', 'update'].includes(reason)) {
     storage.sync.set({ ...defaultSettings, ...settings });
   }
 });
