@@ -47,7 +47,7 @@ const permitAndNavigate = async (tabId) => {
   ]);
 
   // if there's no existing procrastinating tab open, create a new alarm
-  if (!alarm) {
+  if (!alarm && !(await isCheatDay())) {
     await alarms.create('reset-alarm', { delayInMinutes: duration * timeMultiplier });
   }
 
