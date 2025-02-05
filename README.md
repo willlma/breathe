@@ -1,4 +1,4 @@
-# Take a breath
+# Wait a Minute
 
 A web extension to delay loading of certain distracting websites
 
