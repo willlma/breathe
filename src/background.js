@@ -24,6 +24,16 @@ const closeTabAndReset = async () => {
   });
 };
 
+const redirect = (tabId, url) => {
+  try {
+    tabs.update(tabId, { url, loadReplace: true });
+  } catch {
+    // No support for loadReplace on Android
+    // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/tabs/update
+    tabs.update(tabId, { url });
+  }
+};
+
 const permitAndNavigate = async (tabId) => {
   const { domainToCheck: domain } = await storage.session.get('domainToCheck');
   const [alarm, { duration = 10, redirectionURL }, _] = await Promise.all([
@@ -41,7 +51,7 @@ const permitAndNavigate = async (tabId) => {
     await alarms.create('reset-alarm', { delayInMinutes: duration * timeMultiplier });
   }
 
-  tabs.update(tabId, { url: redirectionURL, loadReplace: true });
+  redirect(tabId, redirectionURL);
 };
 
 const shouldSkipWait = (duration) => {
@@ -73,6 +83,8 @@ runtime.onMessage.addListener(async ({ domainToCheck, duration, permit }, { tab 
     storage.session.set({ duration });
     // skip the wait one time if the duration is under 5 mins
     return shouldSkipWait(duration);
+
+    return result;
   } else if (permit) {
     // await to ensure URL is permitted before redirecting to an otherwise blocked page
     await permitAndNavigate(tab.id);
@@ -88,13 +100,7 @@ runtime.onMessage.addListener(async ({ domainToCheck, duration, permit }, { tab 
 
     storage.session.set({ redirectionURL: tab.url });
     const url = runtime.getURL(`src/${fileName}.html`);
-    try {
-      tabs.update(permittedTabId, { url, loadReplace: true });
-    } catch {
-      // No support for loadReplace on Android
-      // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/tabs/update
-      tabs.update(permittedTabId, { url });
-    }
+    redirect(permittedTabId, url);
     storage.session.set({ domainToCheck });
   }
 });
