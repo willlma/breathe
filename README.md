@@ -1,4 +1,4 @@
-# Take a breath
+# Wait a Minute
 
 A web extension to delay loading of certain distracting websites
 
@@ -48,7 +48,7 @@ Add websites you'd rather not waste your time on to `manifest.json`'s `matches` 
 
 ## Manual Testing
 
-Head to constants.js and change the `timeMultiplier` to 0.1 to speed everything up.
+Head to background.js and permit.js and change the `timeMultiplier` to 0.1 to speed everything up.
 
 1. Head to reddit.com to make sure the overlay shows up
 2. If it's your cheat day, you should still see the splash screen every 25 minutes or every new site
@@ -59,33 +59,37 @@ Head to constants.js and change the `timeMultiplier` to 0.1 to speed everything 
 
 ## Roadmap
 
-- [ ] If I walk off while the breathe animation is going for a few minutes, show a button to start the countdown again
-- [x] The content script timeout isn't working. I think maybe JS is getting paused? Use the extension alarm API in the background script to reimplement the feature where an SPA is shut off after the specified time.
-- [x] There's a bug where if I start with a whitelisted URL (a specific tweet) then navigate to blacklisted URL (my Twitter homescreen), it's not picked up as blacklisted. I need to hook into the history pushtate API to detect SPA navigation.
-- [ ] Bug: x.com matches vox.com. Make sure that it can handle any protocol or subdomain but not be too eager
-- [x] Check whether to block on history pushstate (SPAs)
-- [ ] Show cheat day message once every 30 mins
+- [x] Don't allow cheat day if it's between midnight and 6
 - [ ] Ship with better default sites (facebook, instagram, TikTok)
-- [ ] Increase wait time with each use (maybe stick to 25s for the first three), and show the wait time
 - Simplify the form
   - [ ] Hide the 5 minute helper if used
   - [ ] Hide the gif once the continue button is ready
+
+- [ ] Bug: x.com matches vox.com. Make sure that it can handle any protocol or subdomain but not be too eager
+- [ ] If I walk off while the breathe animation is going for a few minutes, show a button to start the countdown again
+- [ ] Dark theme for settings
 
 ## My lists
 
 ```
 hn.algolia.com
+news.google.com
 news.ycombinator.com
 pinboard.in/popular
 reddit.com
+theoldreader.com
+theoldreader.com
+twitter.com
 https://x.com
 ```
 
 ```
 hn.algolia.com/?query=
 news.ycombinator.com/item
+reddit.com/message
 reddit.com/r/*/comments
-https://x.com/*/status
+twitter.com/*/status
+x.com/*/status
 ```
 
 ## Add-on/Web store information

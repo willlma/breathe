@@ -1,19 +1,37 @@
 const { alarms, runtime, storage, tabs } = browser;
 // don't try to make shared files with constants in it, Chrome and Firefox do imports differently and it's a pain
 const timeMultiplier = 1; // set to 0.1 for dev, keep in sync with permit.js
+
+const isBefore7am = (date = new Date()) => date.getHours() < 7;
+
 const isCheatDay = async () => {
+  if (isBefore7am()) return false;
+
   const { cheatDay } = await storage.sync.get('cheatDay');
   return parseInt(cheatDay) === new Date().getDay();
 };
 
 const closeTabAndReset = async () => {
   const { permittedTabId } = await storage.session.get('permittedTabId');
-  if (!(await isCheatDay())) tabs.remove(permittedTabId);
+  if (!(await isCheatDay())) {
+    const shouldClose = await tabs.sendMessage(permittedTabId, { close: true });
+    if (shouldClose) tabs.remove(permittedTabId);
+  }
 
   storage.session.set({
     permittedDomain: null,
     permittedTabId: null,
   });
+};
+
+const redirect = (tabId, url) => {
+  try {
+    tabs.update(tabId, { url, loadReplace: true });
+  } catch {
+    // No support for loadReplace on Android
+    // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/tabs/update
+    tabs.update(tabId, { url });
+  }
 };
 
 const permitAndNavigate = async (tabId) => {
@@ -29,18 +47,18 @@ const permitAndNavigate = async (tabId) => {
   ]);
 
   // if there's no existing procrastinating tab open, create a new alarm
-  if (!alarm) {
+  if (!alarm && !(await isCheatDay())) {
     await alarms.create('reset-alarm', { delayInMinutes: duration * timeMultiplier });
   }
 
-  tabs.update(tabId, { url: redirectionURL, loadReplace: true });
+  redirect(tabId, redirectionURL);
 };
 
 const shouldSkipWait = (duration) => {
   const date = new Date();
 
   // only skip the wait if you'll procrastinate less than 5 minutes (and not between midnight and 7)
-  if (duration > 5 || date.getHours() < 7) return false;
+  if (duration > 5 || isBefore7am(date)) return false;
 
   return storage.local.get('lastSkippedDay').then(({ lastSkippedDay }) => {
     const day = date.getDay();
@@ -77,19 +95,28 @@ runtime.onMessage.addListener(async ({ domainToCheck, duration, permit }, { tab 
     if (tab.id === permittedTabId && permittedDomain === domainToCheck) return;
 
     const fileName = (await isCheatDay()) ? 'cheat-day' : 'form';
+
     storage.session.set({ redirectionURL: tab.url });
-    tabs.update(permittedTabId, { url: runtime.getURL(`src/${fileName}.html`), loadReplace: true });
+    const url = runtime.getURL(`src/${fileName}.html`);
+    redirect(tab.id, url);
     storage.session.set({ domainToCheck });
   }
 });
 
-runtime.onInstalled.addListener(({ reason }) => {
-  if (reason !== 'install') return;
+runtime.onInstalled.addListener(async ({ reason }) => {
+  const settings = await storage.sync.get();
 
-  storage.local.set({ lastSkippedDay: null });
-  storage.sync.set({
-    // keep these values in sync with settings/index.html
+  const defaultSettings = {
     blacklist: 'reddit.com',
     whitelist: 'reddit.com/r/*/comments',
-  });
+    waitDurationSeconds: 25,
+  };
+
+  if (reason === 'install') {
+    storage.local.set({ lastSkippedDay: null });
+  }
+
+  if (['install', 'update'].includes(reason)) {
+    storage.sync.set({ ...defaultSettings, ...settings });
+  }
 });
