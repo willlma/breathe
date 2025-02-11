@@ -83,8 +83,6 @@ runtime.onMessage.addListener(async ({ domainToCheck, duration, permit }, { tab 
     storage.session.set({ duration });
     // skip the wait one time if the duration is under 5 mins
     return shouldSkipWait(duration);
-
-    return result;
   } else if (permit) {
     // await to ensure URL is permitted before redirecting to an otherwise blocked page
     await permitAndNavigate(tab.id);
@@ -100,7 +98,7 @@ runtime.onMessage.addListener(async ({ domainToCheck, duration, permit }, { tab 
 
     storage.session.set({ redirectionURL: tab.url });
     const url = runtime.getURL(`src/${fileName}.html`);
-    redirect(permittedTabId, url);
+    redirect(tab.id, url);
     storage.session.set({ domainToCheck });
   }
 });
