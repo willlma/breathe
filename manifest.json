@@ -15,7 +15,7 @@
       "id": "{0f0b2b69-0733-4738-aec9-722ce434574b}"
     }
   },
-  "description": " Pause to reconsider before wasting time on the web. ",
+  "description": "Pause to reconsider before wasting time on the web.",
   "icons": {
     "48": "src/assets/take-a-breath48.png",
     "128": "src/assets/take-a-breath128.png"
