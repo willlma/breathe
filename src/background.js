@@ -24,13 +24,14 @@ const closeTabAndReset = async () => {
   });
 };
 
-const redirect = (tabId, url) => {
+const redirect = async (tabId, url) => {
   try {
-    tabs.update(tabId, { url, loadReplace: true });
+    // does not throw an error without await
+    await tabs.update(tabId, { url, loadReplace: true });
   } catch {
-    // No support for loadReplace on Android
+    // No support for loadReplace on Firefox for Android or Chrome
     // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/tabs/update
-    tabs.update(tabId, { url });
+    await tabs.update(tabId, { url });
   }
 };
 
