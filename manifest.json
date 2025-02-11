@@ -10,18 +10,18 @@
       "run_at": "document_start"
     }
   ],
-  "description": "Pause and take a breath. Waste less time on the web.",
+  "description": "Pause to reconsider before wasting time on the web.",
   "icons": {
     "48": "src/assets/take-a-breath48.png",
     "128": "src/assets/take-a-breath128.png"
   },
   "manifest_version": 3,
-  "name": "Take a breath",
+  "name": "Wait a Minute",
   "options_ui": {
     "page": "src/settings/index.html"
   },
   "permissions": ["storage", "alarms"],
-  "version": "0.17",
+  "version": "1.0.2",
   "web_accessible_resources": [
     {
       "resources": ["src/assets/circle-rope.gif", "src/form.html", "src/cheat-day.html"],
