@@ -9,7 +9,6 @@ const permit = () =>
     () =>
       runtime
         .sendMessage({ permit: true })
-        .then(() => history.back())
         .catch((err) => console.error(`Failed to temporarily whitelist domain: ${err}`)),
     messageTimeout * timeMultiplier,
   );

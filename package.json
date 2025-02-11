@@ -1,12 +1,13 @@
 {
   "scripts": {
-    "build": "npx web-ext build",
+    "build": "web-ext build",
+    "android": "web-ext run -t firefox-android --android-device=48041FDAP000KQ",
     "test:debug": "playwright test --debug",
     "test": "playwright test"
   },
   "devDependencies": {
     "@playwright/test": "^1.37.1",
-    "web-ext": "^7.6.2",
+    "web-ext": "^8.3.0",
     "webextension-polyfill": "^0.12.0",
     "playwright": "^1.37.1"
   }

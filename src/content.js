@@ -22,16 +22,19 @@ const getDomain = () => {
   return split.join(dot);
 };
 
-const checkDomain = () => {
+const isSiteBlocked = () =>
   storage.sync.get(['blacklist', 'whitelist']).then(
-    ({ blacklist, whitelist }) => {
-      if (listHasMatch(blacklist) && !listHasMatch(whitelist)) {
-        runtime.sendMessage({ domainToCheck: getDomain() });
-      }
-    },
+    ({ blacklist, whitelist }) => listHasMatch(blacklist) && !listHasMatch(whitelist),
     () => console.error('failed to get sync storage'),
   );
+
+const checkDomain = () => {
+  isSiteBlocked().then((bool) => bool && runtime.sendMessage({ domainToCheck: getDomain() }));
 };
 
 window.addEventListener('popstate', checkDomain);
 checkDomain();
+
+runtime.onMessage.addListener(({ close }) => {
+  if (close) return isSiteBlocked();
+});

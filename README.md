@@ -1,4 +1,4 @@
-# Take a breath
+# Wait a Minute
 
 A web extension to delay loading of certain distracting websites
 
@@ -48,7 +48,7 @@ Add websites you'd rather not waste your time on to `manifest.json`'s `matches` 
 
 ## Manual Testing
 
-Head to constants.js and change the `timeMultiplier` to 0.1 to speed everything up.
+Head to background.js and permit.js and change the `timeMultiplier` to 0.1 to speed everything up.
 
 1. Head to reddit.com to make sure the overlay shows up
 2. If it's your cheat day, you should still see the splash screen every 25 minutes or every new site
@@ -59,19 +59,25 @@ Head to constants.js and change the `timeMultiplier` to 0.1 to speed everything 
 
 ## Roadmap
 
-- [ ] If I walk off while the breathe animation is going for a few minutes, show a button to start the countdown again
-- [x] The content script timeout isn't working. I think maybe JS is getting paused? Use the extension alarm API in the background script to reimplement the feature where an SPA is shut off after the specified time.
-- [x] There's a bug where if I start with a whitelisted URL (a specific tweet) then navigate to blacklisted URL (my Twitter homescreen), it's not picked up as blacklisted. I need to hook into the history pushtate API to detect SPA navigation.
+- [x] Don't allow cheat day if it's between midnight and 6
+- [ ] Ship with better default sites (facebook, instagram, TikTok)
+- Simplify the form
+  - [ ] Hide the 5 minute helper if used
+  - [ ] Hide the gif once the continue button is ready
+
 - [ ] Bug: x.com matches vox.com. Make sure that it can handle any protocol or subdomain but not be too eager
-- [x] Check whether to block on history pushstate (SPAs)
+- [ ] If I walk off while the breathe animation is going for a few minutes, show a button to start the countdown again
+- [ ] Dark theme for settings
 
 ## My lists
 
 ```
 hn.algolia.com
+news.google.com
 news.ycombinator.com
 pinboard.in/popular
 reddit.com
+theoldreader.com
 theoldreader.com
 twitter.com
 https://x.com
@@ -80,7 +86,40 @@ https://x.com
 ```
 hn.algolia.com/?query=
 news.ycombinator.com/item
+reddit.com/message
 reddit.com/r/*/comments
 twitter.com/*/status
-https://x.com/*/status
+x.com/*/status
 ```
+
+## Add-on/Web store information
+
+### Description
+
+This is an anti-procrastination tool that takes a softer approach than most site blocking addons. Those don't work because you eventually just uninstall or disable them to continue your guilty pleasure. Rather than blocking you, this extension slows you down before you can visit time-wasting websites like Twitter, Facebook, Instagram, or Reddit.
+
+When you try to visit one, it asks you how long you'd like to browse it for. Then you must wait 20 seconds before you can gain access. This helps break the dopamine loop associated with easily visiting these websites multiple times a day. When the time you defined is up, the tab closes.
+
+Go to settings to set websites you don't want to visit, like:
+https://x.com
+
+If you still want to be able to see certain pages of that website (say someone sends you a tweet), you can whitelist them with wildcards, like this:
+https://x.com/*/status
+
+### Chrome
+
+##### Single Purpose
+
+This extension is designed to help you focus by delaying the loading of certain websites.
+
+##### Storage Justification
+
+Stores a list of URLs configured by the user to block/allow websites.
+
+##### Alarms Justification
+
+The user configures how long they would like to spend on a site. After that delay, the tab is closed. The alarms API is needed to trigger the event after the specified delay.
+
+##### Host Permission Justification
+
+The extension needs to be able to block certain websites whenever the URL changes which must use the history popstate API inside a content script loaded into every page.

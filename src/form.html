@@ -36,7 +36,18 @@
         margin: 0 2rem;
       }
 
-      form > * {
+      form > *,
+      form small {
+        display: block;
+      }
+
+      form small {
+        margin-top: 0.5rem;
+        text-align: center;
+      }
+
+      form button {
+        visibility: hidden;
         display: block;
       }
 
@@ -59,11 +70,11 @@
       }
 
       button {
-        margin: 0 auto 2rem auto;
+        margin: 0 auto 1rem auto;
       }
 
       #rope-circle-gif-container {
-        flex: 4;
+        flex: 3;
         overflow: hidden;
         justify-content: flex-end;
       }
@@ -71,7 +82,6 @@
       #rope-circle-gif-container img {
         opacity: 0;
         transition: opacity 3s;
-        /* overflow: hidden; */
         max-width: 100%;
       }
     </style>
@@ -79,23 +89,25 @@
   <body>
     <div>
       <form>
-        <label>
-          <span>I want to procrastinate for</span>
-          <input min="1" max="45" type="number" value="10" />
-          <span>minutes</span>
-        </label>
-        <small>Set to ≤ 5 minutes to skip the wait (once)</small>
-        <button type="submit">Start the wait</button>
-        <div id="breathe-focus-message" style="visibility: hidden">
-          Focus on something 20 feet away for 20 seconds. It's good for your 👀
+        <div>
+          <label>
+            <span>Waste</span>
+            <input min="1" max="45" type="number" value="10" />
+            <span>minutes</span>
+          </label>
+          <small>Set to ≤ 5 minutes to skip the wait (once)</small>
         </div>
+        <button disabled type="submit">Update</button>
       </form>
+      <div id="breathe-focus-message" style="visibility: hidden">
+        Focus on something 20 feet away. It's good for your 👀
+      </div>
     </div>
     <div id="rope-circle-gif-container">
       <img src="assets/circle-rope.gif" alt="Breathing gif" />
     </div>
     <div id="breathe-footer">
-      <button style="display: none">Continue</button>
+      <button class="continue" style="display: none">Continue</button>
     </div>
 
     <script type="application/javascript" src="./browser-polyfill.js"></script>

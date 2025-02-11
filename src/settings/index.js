@@ -1,5 +1,5 @@
 const { storage } = browser;
-const fields = ['whitelist', 'blacklist', 'cheatDay'];
+const fields = ['waitDurationSeconds', 'whitelist', 'blacklist', 'cheatDay'];
 const submit = document.querySelector('button');
 
 const form = document.querySelector('form');
@@ -10,7 +10,6 @@ form.addEventListener('submit', (evt) => {
 
   const data = new FormData(form);
   const settings = fields.reduce((acc, key) => ({ ...acc, [key]: data.get(key) }), {});
-  console.log('settings', settings);
   storage.sync.set(settings).then(() => {
     button.textContent = 'Saved';
     close(); // Only works in Chrome
