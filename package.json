@@ -1,4 +1,5 @@
 {
+  "name": "Wait a Minute",
   "scripts": {
     "build": "web-ext build",
     "android": "web-ext run -t firefox-android --android-device=48041FDAP000KQ",
