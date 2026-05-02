@@ -12,7 +12,7 @@ Clone this repo, then follow instructions on how to load local extensions on [Ch
 
 ## Development
 
-Run `npm install` to load `browser-polyfill`. `src/browser-polyfill.js` is just symlinks to the node-modules dist folder. If you need to recreate these symlinks, use absolute paths, ie
+Run `pnpm install` to load `browser-polyfill`. `src/browser-polyfill.js` just symlinks to the node-modules dist folder. If you need to recreate these symlinks, use absolute paths, ie
 
 ```
 ln -sf ~/projects/breathe/node_modules/webextension-polyfill/dist/browser-polyfill.js ~/projects/breathe/src/browser-polyfill.js
@@ -28,9 +28,7 @@ There are three main branches:
 
 1. develop on the branch corresponding to the browser you're testing on. Commit browser-specific changes into the browser branch.
 2. switch to the `main` branch to commit shared changes
-3. merge main into the browser branch
-
-Once your feature is ready, merge main into the other browser branch and make whatever changes are necessary to its browser-specific files to get it to work.
+3. rebase onto main in the browser branch
 
 ## Build
 
