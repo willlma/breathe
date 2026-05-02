@@ -32,6 +32,17 @@ const checkDomain = () => {
   isSiteBlocked().then((bool) => bool && runtime.sendMessage({ domainToCheck: getDomain() }));
 };
 
+// Content scripts run in an isolated JS world, so they can't intercept
+// history.pushState/replaceState calls made by SPAs (e.g. React Router).
+// We inject page-script.js into the page's own JS context to patch those
+// methods. It must be loaded as a file (not inline) to bypass page CSP.
+const script = document.createElement('script');
+script.src = runtime.getURL('src/page-script.js');
+document.documentElement.appendChild(script);
+script.remove();
+
+// page-script.js dispatches this event when pushState/replaceState is called
+window.addEventListener('breathe:locationchange', checkDomain);
 window.addEventListener('popstate', checkDomain);
 checkDomain();
 
