@@ -1,6 +1,6 @@
 node_modules
 web-ext-artifacts
-package-lock.json
+pnpm-lock.yaml
 /test-results/
 /playwright-report/
 /playwright/.cache/
