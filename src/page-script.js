@@ -8,3 +8,11 @@
     window.dispatchEvent(new Event('breathe:locationchange'));
   };
 });
+
+// Some SPAs use the Navigation API instead of history.pushState/replaceState.
+// Dispatch after the entry changes so content.js reads the destination URL.
+if ('navigation' in window) {
+  navigation.addEventListener('currententrychange', () => {
+    window.dispatchEvent(new Event('breathe:locationchange'));
+  });
+}

@@ -28,7 +28,12 @@ const isSiteBlocked = () =>
     () => console.error('failed to get sync storage'),
   );
 
+let lastCheckedHref;
+
 const checkDomain = () => {
+  if (location.href === lastCheckedHref) return;
+
+  lastCheckedHref = location.href;
   isSiteBlocked().then((bool) => bool && runtime.sendMessage({ domainToCheck: getDomain() }));
 };
 
